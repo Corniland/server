@@ -1,0 +1,73 @@
+Names:
+  Visitor = A person visiting the website without being logged in.
+  User = A person visiting the website while being logged in.
+  Owner = The user who created a project.
+  Member = A user part of the project.
+  Admin = A person who has special rights. Different account than a User.
+
+User Features:
+• Users can register with email/username/password. Email and username must be unique. Password must be entered twice and be 6 chars minimum.
+• Users can login with email/password.
+• When registering users receive a confirmation email with a link inside. They can't login until they click on the link.
+• Users can create "projects". Can create any number of projects. They are **owner** of projects they create.
+• Owners can invite other people to projects.
+• Projects are defined by: Title, Description, Short Description, Status (In dev, Released, etc...), one cover picture (through an URL).
+• Projects are private by default and can be made public.
+• Only the owner can be change the information and visibility of a project.
+• Visitors can browse a page that list the projects. For each project it should show Title, short description, cover picture, amount of likes.
+• Visitors can check the page of a project if it's public (or if they are a member/owner of the project). This page will display all the information including the list of members.
+• Users can like/unlike projects. A project should keep track of the number of likes it has.
+• Users should be able to see if they like a project on the project browser (example: a star/heart icon on top of it).
+• Users have a profile page. On it we can see the list of projects they own, the list of projects they are part of (member) and the list of projects they like.
+• Users have a setting page, where they can change their username and password, and choose if they want to make their profile page private or public (default to public).
+• Visitors can see a user profile page if it's public. You can always see your own profile page.
+• The list of projects can be sorted by name OR number of like. (can use only 1 sort at a time)
+• The list of projects can be filtered status AND by title (regex). (can use multiple filters at a time)
+• It's possible to sort and filter at the same time.
+
+
+
+/api/ (the API visitors / users will use)
+POST /api/project                                [Without showing private ones] {With pagination and limits?}
+POST /api/project/:projectId/like        (Auth)
+POST /api/project/:projectId/unlike      (Auth)  
+PUT   /api/project/:projectId            (Auth)  [Updating/editing the post details, this includes adding members] {Could be PATCH for only partial changes instead of overwrite}
+DELETE /api/project/:projectId           (Auth)
+GET /api/project/:projectId              (Auth)  [For private projects]
+GET /api/project/:projectId 
+
+GET /api/user                                    [Getting user info with their projects etc, projects they own/are member of would be stored as list of IDs]
+GET /api/user                            (Auth)  [^ but also user's private info]
+POST /api/user                           (Auth)  [For changing settings]
+
+/auth/user (the authentication for users)
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/token
+
+
+==================================================================================================================
+
+
+Admin Features:
+• An admin can connect to a special website with login/password.
+• Admins can see the list of ALL the projects, and ALL their info.
+• Admins can see the list of ALL the users, and ALL their info (but password ofc).
+• Admins can see the list of ALL the admins, and ALL their info (but password ofc).
+• Admin can delete anything listed above.
+• Admin can create new admins with a login and password.
+• Admin can ban a user. A banned user cannot login anymore and cannot perfom any action anymore (he's like a visitor).
+
+/api/admin (the API for the admin panel)
+GET /api/admin/user                      (Admin Auth)  [Getting all users, including private ones]
+GET /api/admin/project                   (Admin Auth)  [Getting all projects including private ones]
+GET /api/admin/user                      (Admin Auth)  [admin accounts]
+POST /api/admin/user                     (Admin Auth)   
+POST /api/admin/user/ban                 (Admin Auth)  [JSON body can contain more info (i.g reason, duration(?) etc)]
+DELETE /api/admin/user                   (Admin Auth) 
+DELETE /api/admin/project                (Admin Auth) 
+DELETE /api/admin/user                   (Admin Auth)  [Except themselves]
+
+/auth/admin (the authentication for the admin panel)
+POST /api/auth/admin/login
+POST /api/auth/admin/token
