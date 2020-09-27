@@ -1,13 +1,15 @@
+import express from "express";
+import mongoose, { Model } from "mongoose";
+import { ProjectModel } from "./mongodb/schemas";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv-safe").config();
-
-import express from "express";
 
 const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-app.get("/", (_req, res) => {
+app.get("/test", async (_req, res) => {
   res.send("Wurks");
 });
 
