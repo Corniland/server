@@ -1,38 +1,58 @@
-import mongoose from "mongoose";
+import { prop, getModelForClass /*, ReturnModelType*/ } from "@typegoose/typegoose";
 
-const Schema = mongoose.Schema;
+export class User {
+  @prop({ required: true })
+  public id!: string;
+  @prop()
+  public email?: string;
+  @prop()
+  public login?: string;
+  @prop()
+  public password?: string;
+  @prop()
+  public passwordSalt?: string;
+  @prop()
+  public likedProjects?: [string];
+  @prop()
+  public privateProfile?: boolean;
+  @prop()
+  public banned?: boolean;
+}
 
-const UserSchema = new Schema({
-  id: { type: String, required: true },
-  email: String,
-  login: String,
-  password: String,
-  passwordSalt: String,
-  likedProjects: [String],
-  privateProfile: Boolean,
-  banned: Boolean,
-});
+export class Project {
+  @prop({ required: true })
+  public id!: string;
+  @prop()
+  public title?: string;
+  @prop()
+  public shortDescription?: string;
+  @prop()
+  public description?: string;
+  @prop()
+  public status?: string;
+  @prop()
+  public coverPictureUrl?: string;
+  @prop()
+  public published?: boolean;
+  @prop()
+  public owner?: string;
+  @prop()
+  public mebmers?: [string];
+  @prop()
+  public likes?: number;
+}
 
-const ProjectSchema = new Schema({
-  id: { type: String, required: true },
-  title: String,
-  shortDescription: String,
-  description: String,
-  status: String,
-  coverPictureUrl: String,
-  published: Boolean,
-  owner: String,
-  mebmers: [String],
-  likes: Number,
-});
+export class Admin {
+  @prop({ required: true })
+  public id!: string;
+  @prop()
+  public login?: string;
+  @prop()
+  public password?: string;
+  @prop()
+  public passwordSalt?: string;
+}
 
-const AdminSchema = new Schema({
-  id: { type: String, required: true },
-  login: String,
-  password: String,
-  passwordSalt: String,
-});
-
-export const UserModel = mongoose.model("User", UserSchema);
-export const ProjectModel = mongoose.model("Project", ProjectSchema);
-export const AdminModel = mongoose.model("Admin", AdminSchema);
+export const UserModel = getModelForClass(User);
+export const ProjectModel = getModelForClass(Project);
+export const AdminModel = getModelForClass(Admin);
