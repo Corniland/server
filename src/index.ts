@@ -1,5 +1,5 @@
 import express from "express";
-import mongoose, { Model } from "mongoose";
+import mongoose from "mongoose";
 import { User, Project, Admin, UserModel, ProjectModel, AdminModel } from "./mongodb/schemas";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

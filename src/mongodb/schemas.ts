@@ -1,8 +1,6 @@
 import { prop, getModelForClass, Ref /*, ReturnModelType*/ } from "@typegoose/typegoose";
 
 export class User {
-  @prop({ required: true })
-  public id!: string;
   @prop()
   public email?: string;
   @prop()
@@ -20,8 +18,6 @@ export class User {
 }
 
 export class Project {
-  @prop({ required: true })
-  public id!: string;
   @prop()
   public title?: string;
   @prop()
@@ -43,8 +39,6 @@ export class Project {
 }
 
 export class Admin {
-  @prop({ required: true })
-  public id!: string;
   @prop()
   public login?: string;
   @prop()
