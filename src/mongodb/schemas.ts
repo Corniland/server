@@ -1,4 +1,4 @@
-import { prop, getModelForClass /*, ReturnModelType*/ } from "@typegoose/typegoose";
+import { prop, getModelForClass, Ref /*, ReturnModelType*/ } from "@typegoose/typegoose";
 
 export class User {
   @prop({ required: true })
@@ -10,11 +10,11 @@ export class User {
   @prop()
   public password?: string;
   @prop()
-  public passwordSalt?: string;
+  public password_salt?: string;
+  @prop({ ref: "Project" })
+  public liked_projects?: Ref<Project>[];
   @prop()
-  public likedProjects?: [string];
-  @prop()
-  public privateProfile?: boolean;
+  public private_profile?: boolean;
   @prop()
   public banned?: boolean;
 }
@@ -25,19 +25,19 @@ export class Project {
   @prop()
   public title?: string;
   @prop()
-  public shortDescription?: string;
+  public short_description?: string;
   @prop()
   public description?: string;
   @prop()
   public status?: string;
   @prop()
-  public coverPictureUrl?: string;
+  public cover_picture_url?: string;
   @prop()
   public published?: boolean;
-  @prop()
-  public owner?: string;
-  @prop()
-  public mebmers?: [string];
+  @prop({ ref: "User" })
+  public owner?: Ref<User>;
+  @prop({ ref: "User" })
+  public membmers?: Ref<User>[];
   @prop()
   public likes?: number;
 }
@@ -50,7 +50,7 @@ export class Admin {
   @prop()
   public password?: string;
   @prop()
-  public passwordSalt?: string;
+  public password_salt?: string;
 }
 
 export const UserModel = getModelForClass(User);
