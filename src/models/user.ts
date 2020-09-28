@@ -6,7 +6,7 @@ export class User {
   @prop()
   public email?: string;
   @prop()
-  public login?: string;
+  public username?: string;
   @prop()
   public password?: string;
   @prop()
