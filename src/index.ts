@@ -1,9 +1,7 @@
-import express from "express";
-import mongoose from "mongoose";
-import { User, Project, Admin, UserModel, ProjectModel, AdminModel } from "./mongodb/schemas";
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv-safe").config();
+
+import express from "express";
 
 const PORT = process.env.PORT || 5000;
 
