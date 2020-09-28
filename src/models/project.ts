@@ -18,7 +18,7 @@ export class Project {
   @prop({ ref: "User" })
   public owner?: Ref<User>;
   @prop({ ref: "User" })
-  public membmers?: Ref<User>[];
+  public members?: Ref<User>[];
   @prop()
   public likes?: number;
 }
