@@ -1,9 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
 import authDataOnlyMiddleware from "./authDataOnlyMiddleware";
-import composeMiddleware, { compose, Next } from "compose-middleware";
-
-// const compose = composeMiddleware.compose;
+import { compose, Next } from "compose-middleware";
 
 const authWithAcessMiddleware = (): express.RequestHandler => {
   return compose([
