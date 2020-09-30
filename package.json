@@ -4,7 +4,7 @@
   "description": "Server for Corniland Project",
   "main": "index.js",
   "scripts": {
-    "serve": "node -r ts-node/register src/index.ts",
+    "serve": "node -r ts-node/register src/server.ts",
     "serve:watch": "nodemon",
     "serve:prod": "node dist/server.js",
     "build": "tsc",
@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@typegoose/typegoose": "^7.4.1",
+    "compose-middleware": "^5.0.1",
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.10.7"
