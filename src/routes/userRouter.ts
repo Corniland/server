@@ -1,13 +1,14 @@
 import express from "express";
+import authWithAcessMiddleware from "../auth/authWithAcessMiddleware";
+import authDataOnlyMiddleware from "../auth/authDataOnlyMiddleware";
+
 const userRouter = express.Router();
 
-//TODO: Authenticate, and let unauthenticated users use it too
-userRouter.get("/:userId", (req, res) => {
+userRouter.get("/:userId", authDataOnlyMiddleware, (req, res) => {
   res.send("a specific user");
 });
 
-//TODO: Authenticate
-userRouter.put("/:userId", (req, res) => {
+userRouter.put("/:userId", authWithAcessMiddleware, (req, res) => {
   res.send("updated users settings");
 });
 

@@ -1,47 +1,46 @@
 import express from "express";
+import authWithAcessMiddleware from "../auth/authWithAcessMiddleware";
+import authDataOnlyMiddleware from "../auth/authDataOnlyMiddleware";
+
 const projectRouter = express.Router();
 
 projectRouter.get("/", (req, res) => {
-  res.send("list of project");
+  res.send("list of projects");
 });
 
-//TODO: Authenticate
-projectRouter.post("/", (req, res) => {
-  res.send("posted projects");
-});
-
-//TODO: Authenticate, if public no need for authentication
-projectRouter.get("/:projectId", (req, res) => {
+projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {
   res.send("a specific project");
 });
 
-//TODO: Authenticate
-projectRouter.put("/:projectId", (req, res) => {
+projectRouter.post("/", authWithAcessMiddleware, (req, res) => {
+  res.send("posted a project");
+});
+
+projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {
+  res.send("a specific project");
+});
+
+projectRouter.put("/:projectId", authWithAcessMiddleware, (req, res) => {
   res.send("updated a project");
 });
 
-//TODO: Authenticate
-projectRouter.delete("/:projectId", (req, res) => {
+projectRouter.delete("/:projectId", authWithAcessMiddleware, (req, res) => {
   res.send("deleted a project");
 });
 
-//TODO: Authenticate
-projectRouter.post("/:projectId/member/:userId", (req, res) => {
+projectRouter.post("/:projectId/member/:userId", authWithAcessMiddleware, (req, res) => {
   res.send("added a user to a project");
 });
 
-//TODO: Authenticate
-projectRouter.delete("/:projectId/member/:userId", (req, res) => {
+projectRouter.delete("/:projectId/member/:userId", authWithAcessMiddleware, (req, res) => {
   res.send("removed a user from a project");
 });
 
-//TODO: Authenticate
-projectRouter.post("/:projectId/like", (req, res) => {
+projectRouter.post("/:projectId/like", authWithAcessMiddleware, (req, res) => {
   res.send("liked a project");
 });
 
-//TODO: Authenticate
-projectRouter.delete("/:projectId/like", (req, res) => {
+projectRouter.delete("/:projectId/like", authWithAcessMiddleware, (req, res) => {
   res.send("unliked a project");
 });
 
