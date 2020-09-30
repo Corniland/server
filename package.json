@@ -4,7 +4,7 @@
   "description": "Server for Corniland Project",
   "main": "index.js",
   "scripts": {
-    "serve": "node -r ts-node/register src/index.ts",
+    "serve": "node -r ts-node/register src/server.ts",
     "serve:watch": "nodemon",
     "serve:prod": "node dist/server.js",
     "build": "tsc",
