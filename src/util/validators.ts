@@ -1,4 +1,4 @@
-import { NewUserData, UserLoginData } from "../routes/AuthRoute/userAuthRouter";
+import { NewUserData, UserLoginData } from "../routes/auth/user";
 import { User } from "../models/user";
 
 export interface ValidationErrors {
