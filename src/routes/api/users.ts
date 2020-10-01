@@ -1,6 +1,6 @@
 import express from "express";
-import authWithAcessMiddleware from "../../auth/authWithAcessMiddleware";
-import authDataOnlyMiddleware from "../../auth/authDataOnlyMiddleware";
+import authWithAcessMiddleware from "../../middleware/auth/authWithAcessMiddleware";
+import authDataOnlyMiddleware from "../../middleware/auth/authDataOnlyMiddleware";
 
 const userRouter = express.Router();
 

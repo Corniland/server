@@ -4,7 +4,7 @@ import admins from "./admins";
 import projects from "./projects";
 import users from "./users";
 
-import authAdminMiddleware from "../../../auth/adminAuthMiddleware";
+import authAdminMiddleware from "../../../middleware/auth/adminAuthMiddleware";
 
 const router = express.Router();
 
