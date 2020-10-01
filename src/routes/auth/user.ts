@@ -4,7 +4,7 @@ import { validateSignupData, validateLoginData } from "../../util/validators";
 
 export const userAuthRouter = express.Router();
 
-export interface NewUserData {
+export interface UserRegisterData {
   email: string;
   username: string;
   password: string;
@@ -17,7 +17,7 @@ export interface UserLoginData {
 
 //user register route
 userAuthRouter.post("/register", (req, res) => {
-  const newUser: NewUserData = { email: req.body.email, username: req.body.username, password: req.body.password };
+  const newUser: UserRegisterData = { email: req.body.email, username: req.body.username, password: req.body.password };
 
   const { valid, errors } = validateSignupData(newUser);
 

@@ -1,4 +1,4 @@
-import { NewUserData, UserLoginData } from "../routes/auth/user";
+import { UserRegisterData, UserLoginData } from "../routes/auth/user";
 import { User } from "../models/user";
 
 export interface ValidationErrors {
@@ -19,7 +19,7 @@ const isEmail = (email: string) => {
   return email.match(emailRegEx);
 };
 
-export const validateSignupData = (signupData: NewUserData): ValidationErrors => {
+export const validateSignupData = (signupData: UserRegisterData): ValidationErrors => {
   const returnErrors: ValidationErrors = {
     errors: {},
     valid: false,
