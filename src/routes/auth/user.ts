@@ -1,6 +1,6 @@
 import express from "express";
 import { validateSignupData, validateLoginData } from "../../util/validators";
-import { User, UserModel } from "../../models/user";
+import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 
 export const userAuthRouter = express.Router();
@@ -62,7 +62,7 @@ userAuthRouter.post("/login", (req, res) => {
 });
 
 //user whomai route
-userAuthRouter.post("/me", (req, res) => {
+userAuthRouter.post("/me", (_req, _res) => {
   //TODO: Decrypt JWT token to get some user data
   //TODO: look for the user in db
   //TODO  return data
