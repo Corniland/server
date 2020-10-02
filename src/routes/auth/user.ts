@@ -47,6 +47,7 @@ userAuthRouter.post("/register", async (req, res) => {
   ).save();
 
   res.status(200);
+  //TODO: Return auth token;
 });
 
 //user login route
