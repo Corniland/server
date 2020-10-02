@@ -1,6 +1,6 @@
 import express from "express";
 import { validateSignupData, validateLoginData } from "../../util/validators";
-import { UserModel } from "../../models/user";
+import { User, UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 
 export const userAuthRouter = express.Router();
@@ -50,7 +50,7 @@ userAuthRouter.post("/register", async (req, res) => {
 });
 
 //user login route
-userAuthRouter.post("/login", (req, res) => {
+userAuthRouter.post("/login", async (req, res) => {
   const userLoginData: UserLoginData = { email: req.body.email, password: req.body.password };
 
   const { valid, errors } = validateLoginData(userLoginData);
@@ -58,6 +58,7 @@ userAuthRouter.post("/login", (req, res) => {
   if (!valid) return res.status(400).json(errors);
 
   //TODO: Authenticate user
+
   //TODO: Return auth token
 });
 
