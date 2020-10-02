@@ -1,4 +1,4 @@
-import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
+import { prop, getModelForClass, Ref, ReturnModelType } from "@typegoose/typegoose";
 import { Project } from "./project";
 import { hashPassword } from "../util/authUtil";
 
