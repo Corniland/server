@@ -1,12 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv-safe").config();
-
 import express from "express";
-import { validateSignupData, validateLoginData } from "../../util/validators";
+import { validateUserSignupData, validateUserLoginData } from "../../util/validators";
 import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import authDataOnlyMiddleware from "../../middleware/auth/authDataOnlyMiddleware";
+import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv-safe").config();
 
 export const userAuthRouter = express.Router();
 
@@ -25,7 +25,7 @@ export interface UserLoginData {
 userAuthRouter.post("/register", async (req, res) => {
   const newUser: UserRegisterData = { email: req.body.email, username: req.body.username, password: req.body.password };
 
-  const { valid, errors } = validateSignupData(newUser);
+  const { valid, errors } = validateUserSignupData(newUser);
 
   if (!valid) return res.status(400).json(errors);
 
@@ -63,13 +63,13 @@ userAuthRouter.post("/register", async (req, res) => {
 userAuthRouter.post("/login", async (req, res) => {
   const userLoginData: UserLoginData = { email: req.body.email, password: req.body.password };
 
-  const { valid, errors } = validateLoginData(userLoginData);
+  const { valid, errors } = validateUserLoginData(userLoginData);
 
   if (!valid) return res.status(400).json(errors);
 
-  //TODO: Authenticate user
+  // Authenticate user
 
-  //checking if user doesn't already exist in DB
+  // checking if user exists in DB
   const userEmailDoc = await UserModel.findOne({ email: userLoginData.email }).exec();
   if (!userEmailDoc) return res.status(400).json({ login: "email or password is incorrect" });
   else if (!(await userEmailDoc.checkPassword(userLoginData.password))) {
