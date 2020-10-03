@@ -1,8 +1,10 @@
 import { UserRegisterData, UserLoginData } from "../routes/auth/user";
+import { AdminLoginData } from "../routes/auth/admin";
 import { User } from "../models/user";
 
 export interface ValidationErrors {
   errors: {
+    login?: string;
     email?: string;
     password?: string;
     username?: string;
@@ -19,7 +21,7 @@ const isEmail = (email: string) => {
   return email.match(emailRegEx);
 };
 
-export const validateSignupData = (signupData: UserRegisterData): ValidationErrors => {
+export const validateUserSignupData = (signupData: UserRegisterData): ValidationErrors => {
   const returnErrors: ValidationErrors = {
     errors: {},
     valid: false,
@@ -34,7 +36,7 @@ export const validateSignupData = (signupData: UserRegisterData): ValidationErro
   return returnErrors;
 };
 
-export const validateLoginData = (userLoginData: UserLoginData): ValidationErrors => {
+export const validateUserLoginData = (userLoginData: UserLoginData): ValidationErrors => {
   const returnErrors: ValidationErrors = {
     errors: {},
     valid: false,
@@ -42,6 +44,18 @@ export const validateLoginData = (userLoginData: UserLoginData): ValidationError
 
   if (isEmpty(userLoginData.email)) returnErrors.errors.email = `Must not be empty`;
   if (isEmpty(userLoginData.password)) returnErrors.errors.password = `Must not be empty`;
+
+  return returnErrors;
+};
+
+export const validateAdminLoginData = (adminLoginData: AdminLoginData): ValidationErrors => {
+  const returnErrors: ValidationErrors = {
+    errors: {},
+    valid: false,
+  };
+
+  if (isEmpty(adminLoginData.login)) returnErrors.errors.login = `Must not be empty`;
+  if (isEmpty(adminLoginData.password)) returnErrors.errors.password = `Must not be empty`;
 
   return returnErrors;
 };
