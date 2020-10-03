@@ -1,5 +1,5 @@
 import { UserRegisterData, UserLoginData } from "../routes/auth/user";
-import { AdminRegisterData, AdminLoginData } from "../routes/auth/admin";
+import { AdminLoginData } from "../routes/auth/admin";
 import { User } from "../models/user";
 
 export interface ValidationErrors {
