@@ -6,6 +6,7 @@ import { validateSignupData, validateLoginData } from "../../util/validators";
 import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import authDataOnlyMiddleware from "../../middleware/auth/authDataOnlyMiddleware";
 
 export const userAuthRouter = express.Router();
 
@@ -84,17 +85,15 @@ userAuthRouter.post("/login", async (req, res) => {
 });
 
 //user whomai route
-userAuthRouter.post("/me", (_req, _res) => {
-  //TODO: Decrypt JWT token to get some user data
-  //TODO: look for the user in db
-  //TODO  return data
-  /*
-    {
-    "email": "foo@example.com",
-    "login": "FooBar",
-    "private_profile": false,
-    "liked_projects": ["5f6e96852f1bc609ad3c55de", "5f6e98d4c4bb195ebf77a6d2"],
-    "banned": false
-    }
-    */
+userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res) => {
+  const userDoc = await UserModel.findOne({ username: res.locals.user.username }).exec(); // look for the user in db
+
+  // return data
+  res.status(200).json({
+    email: userDoc?.email,
+    username: userDoc?.username,
+    private_profile: userDoc?.private_profile,
+    liked_projects: userDoc?.liked_projects,
+    banned: userDoc?.banned,
+  });
 });
