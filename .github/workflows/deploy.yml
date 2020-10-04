@@ -39,8 +39,8 @@ jobs:
       run: npm run build
       
     - name: Clean before upload
-      run: rm -rf /src /node_modules
-    
+      run: rm -rf src/ node_modules/ .git/ .gitignore .vscode/ tsconfig .github/
+      
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
