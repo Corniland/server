@@ -1,0 +1,716 @@
+FORMAT: 1A
+
+# Corniland Project
+
+Welcome to the documentation of the Corniland Project.
+
+# Naming
+
+* **Visitor**: A person visiting the website without being logged in.
+* **User**: A person visiting the website while being logged in.
+* **Owner**: The user who created a project.
+* **Member**: A user part of the project.
+* **Admin**: A person who has special rights. Different account than a User.
+
+# Features
+
+## User Features
+
+* Users can register with email/username/password. Email and username must be unique. Password must be entered twice and be 6 chars minimum.
+* Users can login with email/password.
+* When registering users receive a confirmation email with a link inside. They can't login until they click on the link.
+* Users can create "projects". Can create any number of projects. They are **owner** of projects they create.
+* Owners can invite other people to projects.
+* Projects are defined by: Title, Description, Short Description, Status (In dev, Released, etc...), one cover picture (through an URL).
+* Projects are private by default and can be made public.
+* Only the owner can be change the information and visibility of a project.
+* Visitors can browse a page that list the projects. For each project it should show Title, short description, cover picture, amount of likes.
+* Visitors can check the page of a project if it's public. A user can always see the page of a project if they are a member/owner of it. This page will display all the information including the list of members.
+* Users can like/unlike projects. A project should keep track of the number of likes it has.
+* Users should be able to see if they like a project on the project browser (example: a star/heart icon on top of it).
+* Users have a profile page. On it we can see the list of projects they own, the list of projects they are part of (member) and the list of projects they like.
+* Users have a setting page, where they can change their username and password, and choose if they want to make their profile page private or public (default to public).
+* Visitors can see a user profile page if it's public. You can always see your own profile page.
+* The list of projects can be sorted by name OR number of like. (can use only 1 sort at a time)
+* The list of projects can be filtered status AND by title (regex). (can use multiple filters at a time)
+* It's possible to sort and filter at the same time.
+
+## Administration Features
+
+* An admin can connect to a special website with login/password.
+* Admins can see the list of ALL the projects, and ALL their info.
+* Admins can see the list of ALL the users, and ALL their info (but password ofc).
+* Admins can see the list of ALL the admins, and ALL their info (but password ofc).
+* Admin can delete anything listed above.
+* Admin can create new admins with a login and password.
+* Admin can ban a user. A banned user cannot login anymore and cannot perfom any action anymore (he's like a visitor).
+
+# Group Models
+
+## User [/models/user/{id}]
+
++ Attributes (object)
+    + id: 507f191e810c19729de860ea (string, required)
+    + email: foo@gmail.com (string)
+    + username: FooBar (string)
+    + password: 42a9798b99d4afcec9995e47a1d246b98ebc96be7a732323eee39d924006ee1d (string) - The hashed password
+    + password_salt: b3620d805fed40f3fc1f0527cb892d81c143e168d551f1ff27263ec8b33fb1cb (string) - The random salt used to hash the password
+    + private_profile: false (boolean)
+    + liked_projects: 5f6e96852f1bc609ad3c55de, 5f6e98d4c4bb195ebf77a6d2 (array[string]) - IDs of the Projects which are liked
+    + banned: false (boolean)
+
++ Model (application/json)
+
+    ```js
+    {
+        "id": "507f191e810c19729de860ea",
+        "email": "foo@example.com",
+        "username": "FooBar",
+        "password": "42a9798b99d4afcec9995e47a1d246b98ebc96be7a732323eee39d924006ee1d",
+        "password_salt": "b3620d805fed40f3fc1f0527cb892d81c143e168d551f1ff27263ec8b33fb1cb",
+        "private_profile": false,
+        "liked_projects": ["5f6e96852f1bc609ad3c55de", "5f6e98d4c4bb195ebf77a6d2"],
+        "banned": false
+    }
+    ```
+
+## User Collection [/models/user]
+
++ Attributes (array[User])
+
++ Model (application/json)
+
+    + Headers
+        
+            X-Total-Count: 2
+
+    + Body
+
+        ```js
+        [
+            {
+                "id": "507f191e810c19729de860ea",
+                "email": "foo@example.com",
+                "username": "Foo",
+                "password": "42a9798b99d4afcec9995e47a1d246b98ebc96be7a732323eee39d924006ee1d",
+                "password_salt": "b3620d805fed40f3fc1f0527cb892d81c143e168d551f1ff27263ec8b33fb1cb",
+                "private_profile": false,
+                "liked_projects": ["5f6e96852f1bc609ad3c55de", "5f6e98d4c4bb195ebf77a6d2"],
+                "banned": false
+            },
+            {
+                "id": "5099803df3f4948bd2f98391",
+                "email": "bar@example.com",
+                "username": "Bar",
+                "password": "936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af",
+                "password_salt": "0b42bd8039e3d09a8e4bcc998bdf0eb95f4a55ae9835c4335904b6cc3cfdd1ef",
+                "private_profile": true,
+                "liked_projects": [],
+                "banned": true
+            }
+        ]
+        ```
+
+## Project [/models/project/{id}]
+
++ Attributes (object)
+    + id: 5f6e96852f1bc609ad3c55de (string, required)
+    + title: Super Game (string)
+    + short_description: A small description... (string)
+    + description: This is a pretty big description... (string)
+    + status: Released (string)
+    + cover_picture_url: https://www.thqnordic.com/sites/default/files/games/slider/backgrounds/biomutant_slider.jpg (string)
+    + published: true (boolean)
+    + owner: 507f191e810c19729de860ea (string) - ID of the User who is the owner
+    + members: 5f6e97cf4caa0215b409a84b, 5099803df3f4948bd2f98391 (array[string]) - IDs of the Users who is the owner
+    + likes: 42 (number) - Number of likes the project has
+
++ Model (application/json)
+
+    ```js
+    {
+        "id": "5f6e96852f1bc609ad3c55de",
+        "title": "Super Game",
+        "short_description": "A small description...",
+        "description": "This is a pretty big description...",
+        "status": "Released",
+        "cover_picture_url": "https://www.thqnordic.com/sites/default/files/games/slider/backgrounds/biomutant_slider.jpg",
+        "published": true,
+        "owner": "507f191e810c19729de860ea",
+        "members": ["5f6e97cf4caa0215b409a84b", "5099803df3f4948bd2f98391"],
+        "likes": 42
+    }
+    ```
+
+## Project Collection [/models/project]
+
++ Attributes (array[Project])
+
++ Model (application/json)
+
+    + Headers
+        
+            X-Total-Count: 2
+
+    + Body
+    
+        ```js
+        [
+            {
+                "id": "5f6e96852f1bc609ad3c55de",
+                "title": "Super Game",
+                "short_description": "A small description...",
+                "description": "This is a pretty big description...",
+                "status": "Released",
+                "cover_picture_url": "https://www.thqnordic.com/sites/default/files/games/slider/backgrounds/biomutant_slider.jpg",
+                "published": true,
+                "owner": "507f191e810c19729de860ea",
+                "members": ["5f6e97cf4caa0215b409a84b", "5099803df3f4948bd2f98391"],
+                "likes": 42
+            },
+            {
+                "id": "5f6e98d4c4bb195ebf77a6d2",
+                "title": "The Game",
+                "short_description": "A small description...",
+                "description": "This is a pretty big description...",
+                "status": "In Dev",
+                "cover_picture_url": "https://www.thqnordic.com/sites/default/files/games/slider/backgrounds/biomutant_slider.jpg",
+                "published": false,
+                "owner": "507f191e810c19729de860ea",
+                "members": ["5f6e97cf4caa0215b409a84b", "5099803df3f4948bd2f98391"],
+                "likes": 0
+            }
+        ]
+    ```
+
+## Admin [/models/admin/{id}]
+
++ Attributes (object)
+    + id: 507f191e810c19729de860ea (string, required)
+    + login: FooBar (string)
+    + password: 42a9798b99d4afcec9995e47a1d246b98ebc96be7a732323eee39d924006ee1d (string) - The hashed password
+    + password_salt: b3620d805fed40f3fc1f0527cb892d81c143e168d551f1ff27263ec8b33fb1cb (string) - The random salt used to hash the password
+
++ Model (application/json)
+
+    ```js
+    {
+        "id": "507f191e810c19729de860ea",
+        "login": "FooBar",
+        "password": "42a9798b99d4afcec9995e47a1d246b98ebc96be7a732323eee39d924006ee1d",
+        "password_salt": "b3620d805fed40f3fc1f0527cb892d81c143e168d551f1ff27263ec8b33fb1cb"
+    }
+    ```
+
+## Admin Collection [/models/admin]
+
++ Attributes (array[User])
+
++ Model (application/json)
+    
+    + Headers
+        
+            X-Total-Count: 2
+            
+    + Body
+
+        ```js
+        [
+            {
+                "id": "507f191e810c19729de860ea",
+                "login": "Foo",
+                "password": "42a9798b99d4afcec9995e47a1d246b98ebc96be7a732323eee39d924006ee1d",
+                "password_salt": "b3620d805fed40f3fc1f0527cb892d81c143e168d551f1ff27263ec8b33fb1cb"
+            },
+            {
+                "id": "5099803df3f4948bd2f98391",
+                "login": "Bar",
+                "password": "936a185caaa266bb9cbe981e9e05cb78cd732b0b3280eb944412bb6f8f8f07af",
+                "password_salt": "0b42bd8039e3d09a8e4bcc998bdf0eb95f4a55ae9835c4335904b6cc3cfdd1ef"
+            }
+        ]
+    ```
+
+# Group User API
+
+If a request can return a **401**, that means the user must be authenticated.
+To be authenticated, the user must provide a JWT.
+
+If a request can return a **403**, that means the user must be authenticated AND have the correct.
+
+## User [/api/users]
+
+### Retrieve a User [GET /api/users/{id}]
+
+Retrieve the info of the user with the specified ID. The user profile must be public. A user can alway retrieve their own information.
+
++ Parameters
+    + id: 507f191e810c19729de860ea (string, required) - ID of the User
+    
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [User][]
+    
++ Response 403
++ Response 404
+
+### Update Own Settings [PUT /api/users/me]
+
+Update the info of the user making the request. Must be authenitcated.
+
++ Request (application/json)
+        {
+            "username": "someAdmin",
+            "password": "newpassword",
+            "private_profile": true
+        }
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [User][]
+    
++ Response 400
++ Response 401
+
+## Project [/api/projects]
+
+### List all Projects [GET /api/projects]
+
+Get the list of all the projects.
+
++ Response 200
+    [Project Collection][]
+    
+### Create a Project [POST /api/projects]
+
+Create a new project. Must be authenticated.
+
++ Request (application/json)
+        {
+            "title": "someAdmin"
+        }
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 201
+    [Project][]
+    
++ Response 400
++ Response 401
+
+### Retrieve a Project [GET /api/projects/{id}]
+
+Retrieve the info of the project with the specified ID. The project must be published. Owner and project members can always see the project information.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+    
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Project][]
+    
++ Response 403
++ Response 404
+
+### Update a Project [PUT /api/projects/{id}]
+
+Update the info of the project with the specified ID. Must be authenticated and be owner of the project.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+    
++ Request (application/json)
+        {
+            "title": "The Game",
+            "short_description": "This is short",
+            "description": "This is very long description",
+            "status": "Released",
+            "cover_picture_url": "http://...",
+            "published": true
+        }
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Project][]
+    
++ Response 400
++ Response 401
++ Response 403
++ Response 404
+
+### Delete a Project [DELETE /api/projects/{id}]
+
+Delete the project with the specified ID. Must be authenticated and be owner of the project.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 401
++ Response 403
++ Response 404
+
+### Add a Member to Project [POST /api/projects/{id}/members/{user_id}]
+
+Add a user as a member of the project. Must be authenticated and be owner of the project.
+
+The user must not already be a member of the project.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+    + user_id: 507f191e810c19729de860ea (string, required) - ID of the User
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 400
++ Response 401
++ Response 403
++ Response 404
+
+### Remove Member from Project [DELETE /api/projects/{id}/members/{user_id}]
+
+Remove a member from the project. Must be authenticated and be owner of the project.
+
+The user must be a member of the project.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+    + user_id: 507f191e810c19729de860ea (string, required) - ID of the User
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 400
++ Response 401
++ Response 403
++ Response 404
+
+### Like a Project [POST /api/projects/{id}/like]
+
+Like the project with the specified ID. Must be authenticated and not already like the project.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+    
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 400
++ Response 401
++ Response 403
++ Response 404
+
+### Unlike a Project [DELETE /api/projects/{id}/like]
+
+Unlike the project with the specified ID. Must be authenticated and must like the project.
+
++ Parameters
+    + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
+    
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 400
++ Response 401
++ Response 403
++ Response 404
+
+# Group Admin API
+
+API for the admin panel.
+
+## Admin [/api/admin/admins]
+
+Routes to manage admins.
+
+### List all Admins [GET /api/admin/admins]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Admin Collection][]
+
++ Response 401
+
+### Create an Admin [POST /api/admin/admins]
+
++ Request (application/json)
+    {
+        "login": "someAdmin",
+        "password": "somePassword"
+    }
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 201
+    [Admin][]
+
++ Response 400
++ Response 401
+
+### Retrieve an Admin [GET /api/admin/admins/{id}]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Admin][]
++ Response 401
++ Response 404
+
+### Update an Admin [PUT /api/admin/admins/{id}]
+
++ Request (application/json)
+        {
+            "login": "someAdmin",
+            "password": "somePassword"
+        }
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Admin][]
++ Response 400
++ Response 401
++ Response 404
+
+### Delete an Admin [DELETE /api/admin/admins/{id}]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 401
++ Response 404
+
+## User [/api/admin/users]
+
+Routes to manage users.
+
+### List all Users [GET /api/admin/users]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [User Collection][]
+            
++ Response 401
+
+### Retrieve a User [GET /api/admin/users/{id}]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [User][]
++ Response 401
++ Response 404
+
+### Delete a User [DELETE /api/admin/users/{id}]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 401
++ Response 404
+
+### Ban a User [POST /api/admin/users/{id}/ban]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 400
++ Response 401
++ Response 404
+
+### Unban a User [DELETE /api/admin/users/{id}/ban]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
++ Response 400
++ Response 401
++ Response 404
+
+## Project [/api/admin/projects]
+
+Routes to manage projects.
+
+### List all Projects [GET /api/admin/projects]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Project Collection][]
+            
++ Response 401
+
+### Retrieve an Project [GET /api/admin/projects/{id}]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Project][]
++ Response 401
++ Response 404
+
+### Delete a Project [DELETE /api/admin/projects/{id}]
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
++ Response 200
++ Response 401
++ Response 404
+
+# Group Authentication
+
+Routes used for authentication.
+
+## User [/auth/user]
+
+Routes for user authentication.
+
+### Register [POST /auth/user/register]
+
++ Request (application/json)
+        
+        {
+            "email": "foo@example.com",
+            "username": "FooBar",
+            "password": "somePassword"
+        }
+
++ Response 201
++ Response 400
+
+### Login [POST /auth/user/login]
+
+Login using email and password, and get a JWT.
+
++ Request (application/json)
+        
+        {
+            "email": "foo@example.com",
+            "password": "somePassword"
+        }
+
++ Response 200
+
+        {
+            "jwt":" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.1jcsM2AQnmFuBXAVoUAZ17v_eJ93bFf5VH57_6zrRaE"
+        }
+
++ Response 401
+
+### Who Am I [GET /auth/user/me]
+
+Get the current User info.
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [User][]
++ Response 401
+
+## Admin [/auth/admin]
+
+Routes for admin authentication on the admin panel.
+
+### Login [POST /auth/admin/login]
+
+Login using login and password, and get a JWT.
+
++ Request (application/json)
+        
+        {
+            "login": "someAdmin",
+            "password": "somePassword"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "jwt":" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.1jcsM2AQnmFuBXAVoUAZ17v_eJ93bFf5VH57_6zrRaE"
+        }
+    
++ Response 401
+
+### Who Am I [GET /auth/admin/me]
+
+Get the current Admin info.
+
+*Might not be usefull for the Admin Panel since we don't need to use the info.*
+
++ Request
+    + Headers
+        
+            Authorization: Bearer <token>
+
++ Response 200
+    [Admin][]
++ Response 401
