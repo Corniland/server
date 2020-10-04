@@ -31,16 +31,16 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-        
+
     - name: Install npm dependencies
       run: npm install
-      
+
     - name: Build
       run: npm run build
-      
+
     - name: Clean before upload
       run: rm -rf src/ node_modules/ .git/ .gitignore .vscode/ tsconfig .github/
-      
+
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
@@ -50,3 +50,11 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
+
+    - name: Execute deploy.sh script
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: scripts/deploy.sh
