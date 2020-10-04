@@ -6,6 +6,8 @@ module.exports = {
       env: {
         PORT: 3000,
       },
+      exec_mode: "cluster",
+      instances: "max",
     },
   ],
 };
