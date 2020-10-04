@@ -58,5 +58,6 @@ jobs:
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
+          source /home/ubuntu/.bashrc
           chmod +x /home/ubuntu/corniland-server/scripts/deploy.sh
           /home/ubuntu/corniland-server/scripts/deploy.sh
