@@ -1,7 +1,7 @@
 import express from "express";
 import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
-import { User, UserModel } from "../../models/user";
+import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 
 const userRouter = express.Router();
@@ -25,22 +25,22 @@ userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res) => {
 });
 
 userRouter.put("/:userId", authWithAcessMiddleware, async (req, res) => {
+  const userId = req.params.userId;
+  const newUserSettings = req.body; //Retreive new settings
+  //Find the user in db
+  const userDoc = await UserModel.findById(userId);
+  if (!userDoc) return res.status(404).json({ error: "user doesn't exist" });
+  // Update user settings
+
+  if (newUserSettings.username) {
+    const userNewUsernameDoc = await UserModel.findOne({ username: newUserSettings.username });
+    if (userNewUsernameDoc) res.status(400).json({ error: "The username is already taken" });
+  }
+
   try {
-    const userId = req.params.userId;
-    const newUserSettings = req.body; //Retreive new settings
-    //Find the user in db
-    const userDoc = await UserModel.findById(userId);
-    if (!userDoc) return res.status(404).json({ error: "user doesn't exist" });
-    // Update user settings
-
-    if (newUserSettings.username) {
-      const userNewUsernameDoc = await UserModel.findOne({ username: newUserSettings.username });
-      if (userNewUsernameDoc) res.status(400).json({ error: "The username is already taken" });
-    }
-
     let newPassword;
 
-    if (newUserSettings.password) newPassword = <string>await bcrypt.hash(newUserSettings.password, userDoc.password_salt);
+    if (newUserSettings.password) newPassword = await bcrypt.hash(newUserSettings.password, userDoc.password_salt);
 
     const newUserData = {
       username: newUserSettings.username,
