@@ -105,5 +105,7 @@ userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res) => {
       liked_projects: userDoc?.liked_projects,
       banned: userDoc?.banned,
     });
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+  }
 });
