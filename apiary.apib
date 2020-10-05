@@ -252,8 +252,14 @@ Retrieve the info of the user with the specified ID. The user profile must be pu
         
             Authorization: Bearer <token>
 
-+ Response 200
-    [User][]
++ Response 200 (application/json)
+
+        {
+            "id": "507f191e810c19729de860ea",
+            "email": "foo@example.com",
+            "username": "FooBar",
+            "liked_projects": ["5f6e96852f1bc609ad3c55de", "5f6e98d4c4bb195ebf77a6d2"],
+        }
     
 + Response 403
 + Response 404
@@ -263,6 +269,7 @@ Retrieve the info of the user with the specified ID. The user profile must be pu
 Update the info of the user making the request. Must be authenitcated.
 
 + Request (application/json)
+
         {
             "username": "someAdmin",
             "password": "newpassword",
@@ -272,8 +279,14 @@ Update the info of the user making the request. Must be authenitcated.
         
             Authorization: Bearer <token>
 
-+ Response 200
-    [User][]
++ Response 200 (application/json)
+
+        {
+            "id": "507f191e810c19729de860ea",
+            "username": "FooBar",
+            "private_profile": true
+            "liked_projects": ["5f6e96852f1bc609ad3c55de", "5f6e98d4c4bb195ebf77a6d2"],
+        }
     
 + Response 400
 + Response 401
@@ -331,6 +344,7 @@ Update the info of the project with the specified ID. Must be authenticated and 
     + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
     
 + Request (application/json)
+
         {
             "title": "The Game",
             "short_description": "This is short",
@@ -469,10 +483,11 @@ Routes to manage admins.
 ### Create an Admin [POST /api/admin/admins]
 
 + Request (application/json)
-    {
-        "login": "someAdmin",
-        "password": "somePassword"
-    }
+
+        {
+            "login": "someAdmin",
+            "password": "somePassword"
+        }
     + Headers
         
             Authorization: Bearer <token>
@@ -498,6 +513,7 @@ Routes to manage admins.
 ### Update an Admin [PUT /api/admin/admins/{id}]
 
 + Request (application/json)
+
         {
             "login": "someAdmin",
             "password": "somePassword"
@@ -635,7 +651,7 @@ Routes for user authentication.
 ### Register [POST /auth/user/register]
 
 + Request (application/json)
-        
+
         {
             "email": "foo@example.com",
             "username": "FooBar",
@@ -650,7 +666,7 @@ Routes for user authentication.
 Login using email and password, and get a JWT.
 
 + Request (application/json)
-        
+
         {
             "email": "foo@example.com",
             "password": "somePassword"
@@ -686,7 +702,7 @@ Routes for admin authentication on the admin panel.
 Login using login and password, and get a JWT.
 
 + Request (application/json)
-        
+
         {
             "login": "someAdmin",
             "password": "somePassword"
