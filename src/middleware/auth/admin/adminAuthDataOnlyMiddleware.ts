@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv-safe").config();
-
 import { Request, Response } from "express";
 import { Next } from "compose-middleware";
 import jwt from "jsonwebtoken";

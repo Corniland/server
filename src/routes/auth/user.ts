@@ -5,9 +5,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv-safe").config();
-
 export const userAuthRouter = express.Router();
 
 export interface UserRegisterData {
