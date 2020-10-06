@@ -3,7 +3,7 @@ declare namespace NodeJS {
   export interface ProcessEnv {
     PORT: string;
     MONGODB_CONNECTION: string;
-    ACCESS_TOKEN_SECRET: string;
-    ADMIN_ACCESS_TOKEN_SECRET: string;
+    JWT_SECRET_USER: string;
+    JWT_SECRET_ADMIN: string;
   }
 }

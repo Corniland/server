@@ -53,7 +53,7 @@ userAuthRouter.post("/register", async (req, res) => {
     ).save();
 
     // Return auth token;
-    const accessToken = jwt.sign({ email: newUser.email, username: newUser.username }, process.env.ACCESS_TOKEN_SECRET);
+    const accessToken = jwt.sign({ email: newUser.email, username: newUser.username }, process.env.JWT_SECRET_USER);
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
@@ -78,7 +78,7 @@ userAuthRouter.post("/login", async (req, res) => {
   }
   try {
     // Return auth token;
-    const accessToken = jwt.sign({ email: userEmailDoc.email, username: userEmailDoc.username }, process.env.ACCESS_TOKEN_SECRET);
+    const accessToken = jwt.sign({ email: userEmailDoc.email, username: userEmailDoc.username }, process.env.JWT_SECRET_USER);
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {

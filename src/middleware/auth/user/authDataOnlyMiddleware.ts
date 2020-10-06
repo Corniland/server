@@ -15,7 +15,7 @@ const authDataOnlyMiddleware = async (req: Request, res: Response, next: Next) =
   let user;
 
   try {
-    user = jwt.verify(userAccessToken, process.env.ACCESS_TOKEN_SECRET);
+    user = jwt.verify(userAccessToken, process.env.JWT_SECRET_USER);
   } catch (err) {
     console.log(err);
     return res.sendStatus(403);

@@ -15,7 +15,7 @@ const adminAuthDataOnlyMiddleware = async (req: Request, res: Response, next: Ne
   let admin;
 
   try {
-    admin = jwt.verify(adminAccessToken, process.env.ADMIN_ACCESS_TOKEN_SECRET);
+    admin = jwt.verify(adminAccessToken, process.env.JWT_SECRET_ADMIN);
   } catch (err) {
     console.log(err);
     return res.sendStatus(403);
