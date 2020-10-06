@@ -1,18 +1,17 @@
-import { Request, Response } from "express";
-import { Next } from "compose-middleware";
+import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { compose, Next } from "compose-middleware";
 
-const adminAuthDataOnlyMiddleware = async (req: Request, res: Response, next: Next) => {
-  // parsing JWT token.
-  const authHeader = req.headers["authorization"];
-  const adminAccessToken = authHeader && authHeader?.split(" ")[1];
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bearerToken = require("express-bearer-token");
 
-  if (adminAccessToken == null) return res.sendStatus(401);
+const middleware = (req: Request, res: Response, next: Next) => {
+  if (req.token == null) return res.sendStatus(401);
 
   let admin;
 
   try {
-    admin = jwt.verify(adminAccessToken, process.env.JWT_SECRET_ADMIN);
+    admin = jwt.verify(req.token, process.env.JWT_SECRET_ADMIN);
   } catch (err) {
     console.log(err);
     return res.sendStatus(403);
@@ -22,5 +21,7 @@ const adminAuthDataOnlyMiddleware = async (req: Request, res: Response, next: Ne
   res.locals.admin = admin;
   next();
 };
+
+const adminAuthDataOnlyMiddleware = (): express.RequestHandler => compose([bearerToken(), middleware]);
 
 export default adminAuthDataOnlyMiddleware;
