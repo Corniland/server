@@ -2,8 +2,7 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { compose, Next } from "compose-middleware";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const bearerToken = require("express-bearer-token");
+import bearerToken from "express-bearer-token";
 
 const middleware = (req: Request, res: Response, next: Next) => {
   if (req.token == null) return res.sendStatus(401);
