@@ -12,18 +12,14 @@ const authDataOnlyMiddleware = async (req: Request, res: Response, next: Next) =
 
   if (userAccessToken == null) return res.sendStatus(401);
 
-  const TOKEN = process.env.ACCESS_TOKEN_SECRET;
-
   let user;
 
-  if (TOKEN === undefined) console.log("No secret access token in env");
-  else
-    try {
-      user = jwt.verify(userAccessToken, TOKEN);
-    } catch (err) {
-      console.log(err);
-      return res.sendStatus(403);
-    }
+  try {
+    user = jwt.verify(userAccessToken, process.env.ACCESS_TOKEN_SECRET);
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(403);
+  }
 
   // storing user data in res.locals.user
   res.locals.user = user;

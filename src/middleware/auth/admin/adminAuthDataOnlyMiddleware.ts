@@ -12,18 +12,14 @@ const adminAuthDataOnlyMiddleware = async (req: Request, res: Response, next: Ne
 
   if (adminAccessToken == null) return res.sendStatus(401);
 
-  const TOKEN = process.env.ADMIN_ACCESS_TOKEN_SECRET;
-
   let admin;
 
-  if (TOKEN === undefined) console.log("No secret access token in env");
-  else
-    try {
-      admin = jwt.verify(adminAccessToken, TOKEN);
-    } catch (err) {
-      console.log(err);
-      return res.sendStatus(403);
-    }
+  try {
+    admin = jwt.verify(adminAccessToken, process.env.ADMIN_ACCESS_TOKEN_SECRET);
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(403);
+  }
 
   // storing admin data in res.locals.admin
   res.locals.admin = admin;
