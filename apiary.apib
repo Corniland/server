@@ -4,6 +4,8 @@ FORMAT: 1A
 
 Welcome to the documentation of the Corniland Project.
 
+https://github.com/Corniland
+
 # Naming
 
 * **Visitor**: A person visiting the website without being logged in.
@@ -269,12 +271,13 @@ Retrieve the info of the user with the specified ID. The user profile must be pu
 Update the info of the user making the request. Must be authenitcated.
 
 + Request (application/json)
-
-        {
-            "username": "someAdmin",
-            "password": "newpassword",
-            "private_profile": true
-        }
+    + Body
+        
+            {
+                "username": "someAdmin",
+                "password": "newpassword",
+                "private_profile": true
+            }
     + Headers
         
             Authorization: Bearer <token>
@@ -305,9 +308,11 @@ Get the list of all the projects.
 Create a new project. Must be authenticated.
 
 + Request (application/json)
-        {
-            "title": "someAdmin"
-        }
+    + Body
+            
+            {
+                "title": "someName"
+            }
     + Headers
         
             Authorization: Bearer <token>
@@ -344,15 +349,16 @@ Update the info of the project with the specified ID. Must be authenticated and 
     + id: 5f6e96852f1bc609ad3c55de (string, required) - ID of the Project
     
 + Request (application/json)
-
-        {
-            "title": "The Game",
-            "short_description": "This is short",
-            "description": "This is very long description",
-            "status": "Released",
-            "cover_picture_url": "http://...",
-            "published": true
-        }
+    + Body
+    
+            {
+                "title": "The Game",
+                "short_description": "This is short",
+                "description": "This is very long description",
+                "status": "Released",
+                "cover_picture_url": "http://...",
+                "published": true
+            }
     + Headers
         
             Authorization: Bearer <token>
@@ -483,11 +489,12 @@ Routes to manage admins.
 ### Create an Admin [POST /api/admin/admins]
 
 + Request (application/json)
-
-        {
-            "login": "someAdmin",
-            "password": "somePassword"
-        }
+    + Body
+    
+            {
+                "login": "someAdmin",
+                "password": "somePassword"
+            }
     + Headers
         
             Authorization: Bearer <token>
@@ -513,11 +520,12 @@ Routes to manage admins.
 ### Update an Admin [PUT /api/admin/admins/{id}]
 
 + Request (application/json)
-
-        {
-            "login": "someAdmin",
-            "password": "somePassword"
-        }
+    + Body
+    
+            {
+                "login": "someAdmin",
+                "password": "somePassword"
+            }
     + Headers
         
             Authorization: Bearer <token>
