@@ -1,26 +1,28 @@
-import { Request, Response } from "express";
-import { Next } from "compose-middleware";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const createError = require("http-errors");
+
+import express, { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import bearerToken from "express-bearer-token";
+import { compose } from "compose-middleware";
 
-const authDataOnlyMiddleware = async (req: Request, res: Response, next: Next) => {
-  // parsing JWT token.
-  const authHeader = req.headers["authorization"];
-  const userAccessToken = authHeader && authHeader?.split(" ")[1];
+const middleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.token == null) return next(createError(401, "Not authorized"));
 
-  if (userAccessToken == null) return res.sendStatus(401);
-
-  let user;
+  let admin;
 
   try {
-    user = jwt.verify(userAccessToken, process.env.JWT_SECRET_USER);
+    admin = jwt.verify(req.token, process.env.JWT_SECRET_USER);
   } catch (err) {
     console.log(err);
-    return res.sendStatus(403);
+    next(createError(403, err.message));
   }
 
-  // storing user data in res.locals.user
-  res.locals.user = user;
+  // storing admin data in res.locals.admin
+  res.locals.admin = admin;
   next();
 };
+
+const authDataOnlyMiddleware = (): express.RequestHandler => compose([bearerToken(), middleware]);
 
 export default authDataOnlyMiddleware;

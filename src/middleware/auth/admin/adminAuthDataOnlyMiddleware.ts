@@ -1,10 +1,12 @@
-import express, { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { compose, Next } from "compose-middleware";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const createError = require("http-errors");
 
+import express, { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { compose } from "compose-middleware";
 import bearerToken from "express-bearer-token";
 
-const middleware = (req: Request, res: Response, next: Next) => {
+const middleware = (req: Request, res: Response, next: NextFunction) => {
   if (req.token == null) return res.sendStatus(401);
 
   let admin;
@@ -13,7 +15,7 @@ const middleware = (req: Request, res: Response, next: Next) => {
     admin = jwt.verify(req.token, process.env.JWT_SECRET_ADMIN);
   } catch (err) {
     console.log(err);
-    return res.sendStatus(403);
+    next(createError(401, "Unauthorized access"));
   }
 
   // storing admin data in res.locals.admin

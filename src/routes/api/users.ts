@@ -21,6 +21,7 @@ userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -60,6 +61,7 @@ userRouter.put("/:userId", authWithAcessMiddleware, async (req, res) => {
     res.status(200).json({ email: userDoc.email, username: userDoc.username });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

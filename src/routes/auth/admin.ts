@@ -33,6 +33,7 @@ adminAuthRouter.post("/login", async (req, res) => {
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -47,5 +48,6 @@ adminAuthRouter.post("/me", async (req, res) => {
     });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });

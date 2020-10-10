@@ -1,16 +1,14 @@
-import express from "express";
-import { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import authDataOnlyMiddleware from "./authDataOnlyMiddleware";
-import { compose, Next } from "compose-middleware";
+import { compose } from "compose-middleware";
+
+const middleware = (req: Request, res: Response, next: NextFunction) => {
+  if (res.locals.user) next();
+  res.status(403).json({ error: `Unauthorized` });
+};
 
 const authWithAcessMiddleware = (): express.RequestHandler => {
-  return compose([
-    authDataOnlyMiddleware,
-    (_req: Request, res: Response, next: Next): void => {
-      if (res.locals.user) next();
-      res.status(403).json({ error: `Unauthorized` });
-    },
-  ]);
+  return compose([authDataOnlyMiddleware, middleware]);
 };
 
 export default authWithAcessMiddleware;
