@@ -1,10 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import authDataOnlyMiddleware from "./authDataOnlyMiddleware";
 import { compose } from "compose-middleware";
+import createError from "http-errors";
 
 const middleware = (req: Request, res: Response, next: NextFunction) => {
   if (res.locals.user) next();
-  res.status(403).json({ error: `Unauthorized` });
+  return next(createError(403));
 };
 
 const authWithAcessMiddleware = (): express.RequestHandler => {

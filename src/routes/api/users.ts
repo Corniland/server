@@ -2,17 +2,18 @@ import express from "express";
 import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
 import { UserModel } from "../../models/user";
+import createError from "http-errors";
 import bcrypt from "bcrypt";
 
 const userRouter = express.Router();
 
-userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res) => {
+userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res, next) => {
   try {
     const userId = req.params.userId;
     //Find the user in db
     const userDoc = await UserModel.findById(userId);
-    if (!userDoc) return res.status(404).json({ error: "user doesn't exist" });
-    if (userDoc.private_profile) res.status(200).json({ user: "This user profile is public" });
+    if (!userDoc) return next(createError(404));
+    if (userDoc.private_profile) return next(createError(404, "This user profile is private"));
 
     res.status(200).json({
       id: userDoc.id,
@@ -21,21 +22,21 @@ userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return next(createError(500));
   }
 });
 
-userRouter.put("/:userId", authWithAcessMiddleware, async (req, res) => {
+userRouter.put("/:userId", authWithAcessMiddleware, async (req, res, next) => {
   const userId = req.params.userId;
   const newUserSettings = req.body; //Retreive new settings
   //Find the user in db
   const userDoc = await UserModel.findById(userId);
-  if (!userDoc) return res.status(404).json({ error: "user doesn't exist" });
+  if (!userDoc) return next(createError(404));
   // Update user settings
 
   if (newUserSettings.username) {
     const userNewUsernameDoc = await UserModel.findOne({ username: newUserSettings.username });
-    if (userNewUsernameDoc) res.status(400).json({ error: "The username is already taken" });
+    if (userNewUsernameDoc) return next(createError(400, "The username is already taken"));
   }
 
   try {
@@ -61,7 +62,7 @@ userRouter.put("/:userId", authWithAcessMiddleware, async (req, res) => {
     res.status(200).json({ email: userDoc.email, username: userDoc.username });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return next(createError(500));
   }
 });
 

@@ -4,6 +4,7 @@ import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
+import createError from "http-errors";
 
 export const userAuthRouter = express.Router();
 
@@ -19,7 +20,7 @@ export interface UserLoginData {
 }
 
 //user register route
-userAuthRouter.post("/register", async (req, res) => {
+userAuthRouter.post("/register", async (req, res, next) => {
   const newUser: UserRegisterData = { email: req.body.email, username: req.body.username, password: req.body.password };
 
   const { valid, errors } = validateUserSignupData(newUser);
@@ -29,8 +30,9 @@ userAuthRouter.post("/register", async (req, res) => {
   //checking if user doesn't already exist in DB
   const userUsernameDoc = await UserModel.findOne({ username: newUser.username });
   const userEmailDoc = await UserModel.findOne({ email: newUser.email });
-  if (userUsernameDoc) return res.status(400).json({ username: "this username is already taken" });
-  if (userEmailDoc) return res.status(400).json({ email: "this email is already taken" });
+
+  if (userUsernameDoc) return next(createError(400, "this username is already taken"));
+  if (userEmailDoc) return next(createError(400, "this email is already taken"));
 
   try {
     // Gen salt and store it together with the hashed password
@@ -55,12 +57,12 @@ userAuthRouter.post("/register", async (req, res) => {
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return next(createError(500));
   }
 });
 
 //user login route
-userAuthRouter.post("/login", async (req, res) => {
+userAuthRouter.post("/login", async (req, res, next) => {
   const userLoginData: UserLoginData = { email: req.body.email, password: req.body.password };
 
   const { valid, errors } = validateUserLoginData(userLoginData);
@@ -70,9 +72,9 @@ userAuthRouter.post("/login", async (req, res) => {
   // Authenticate user
   // checking if user exists in DB
   const userEmailDoc = await UserModel.findOne({ email: userLoginData.email });
-  if (!userEmailDoc) return res.status(400).json({ login: "email or password is incorrect" });
+  if (!userEmailDoc) return next(createError(400, "email or password is incorrect"));
   else if (!(await userEmailDoc.checkPassword(userLoginData.password))) {
-    return res.status(400).json({ login: "email or password is incorrect" });
+    return next(createError(400, "email or password is incorrect"));
   }
   try {
     // Return auth token;
@@ -81,12 +83,12 @@ userAuthRouter.post("/login", async (req, res) => {
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return next(createError(500));
   }
 });
 
 //user whomai route
-userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res) => {
+userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res, next) => {
   try {
     const userDoc = await UserModel.findOne({ username: res.locals.user.username }); // look for the user in db
 
@@ -100,6 +102,6 @@ userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return next(createError(500));
   }
 });
