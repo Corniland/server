@@ -6,7 +6,19 @@ import bodyParser from "body-parser";
 
 import routes from "./routes/indexRoutes";
 
-const PORT = process.env.PORT || 5000;
+process.on("uncaughtException", async (err) => {
+  console.error(`Uncaught Exception: ${err.stack}`);
+  if (process.env.NODE_ENV === "production") return;
+  console.error(`Exiting with status 1 in 3s`);
+  setTimeout(() => process.exit(1), 3000);
+});
+process.on("unhandledRejection", async (err) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  console.error(`Unhandled Rejection: ${(err as any).stack || err}`);
+  if (process.env.NODE_ENV === "production") return;
+  console.error(`Exiting with status 1 in 3s`);
+  setTimeout(() => process.exit(1), 3000);
+});
 
 const app = express();
 
@@ -15,4 +27,4 @@ app.use(bodyParser.json());
 
 app.use(routes);
 
-app.listen(PORT, () => console.log(`Server running at port: ${PORT}`));
+app.listen(process.env.PORT, () => console.log(`Server running at port: ${process.env.PORT}`));
