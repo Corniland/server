@@ -2,7 +2,6 @@
 require("dotenv-safe").config();
 
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
 import helmet from "helmet";
 
@@ -32,8 +31,8 @@ app.use(
     exposedHeaders: ["X-Total-Count"],
   })
 );
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(routes);
 
