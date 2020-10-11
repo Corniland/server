@@ -19,8 +19,4 @@ router.use("/projects", projects);
 
 router.use(bearerToken());
 
-router.use("/thing", (req, res) => {
-  console.log(req.token);
-});
-
 export default router;

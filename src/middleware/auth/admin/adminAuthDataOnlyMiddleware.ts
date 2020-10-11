@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const createError = require("http-errors");
-
+import createError from "http-errors";
 import express, { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { compose } from "compose-middleware";
@@ -15,7 +13,7 @@ const middleware = (req: Request, res: Response, next: NextFunction) => {
     admin = jwt.verify(req.token, process.env.JWT_SECRET_ADMIN);
   } catch (err) {
     console.log(err);
-    next(createError(401, "Unauthorized access"));
+    return next(createError(401, "Unauthorized access"));
   }
 
   // storing admin data in res.locals.admin

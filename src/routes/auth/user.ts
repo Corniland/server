@@ -27,8 +27,8 @@ userAuthRouter.post("/register", async (req, res) => {
   if (!valid) return res.status(400).json(errors);
 
   //checking if user doesn't already exist in DB
-  const userUsernameDoc = await UserModel.findOne({ username: newUser.username }).exec();
-  const userEmailDoc = await UserModel.findOne({ email: newUser.email }).exec();
+  const userUsernameDoc = await UserModel.findOne({ username: newUser.username });
+  const userEmailDoc = await UserModel.findOne({ email: newUser.email });
   if (userUsernameDoc) return res.status(400).json({ username: "this username is already taken" });
   if (userEmailDoc) return res.status(400).json({ email: "this email is already taken" });
 
@@ -69,7 +69,7 @@ userAuthRouter.post("/login", async (req, res) => {
 
   // Authenticate user
   // checking if user exists in DB
-  const userEmailDoc = await UserModel.findOne({ email: userLoginData.email }).exec();
+  const userEmailDoc = await UserModel.findOne({ email: userLoginData.email });
   if (!userEmailDoc) return res.status(400).json({ login: "email or password is incorrect" });
   else if (!(await userEmailDoc.checkPassword(userLoginData.password))) {
     return res.status(400).json({ login: "email or password is incorrect" });
