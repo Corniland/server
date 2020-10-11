@@ -2,6 +2,7 @@
 require("dotenv-safe").config();
 
 import express from "express";
+import bodyParser from "body-parser";
 
 import routes from "./routes/indexRoutes";
 
@@ -22,6 +23,9 @@ process.on("unhandledRejection", async (err) => {
 });
 
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use(routes);
 
