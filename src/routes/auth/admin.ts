@@ -17,7 +17,7 @@ adminAuthRouter.post("/login", async (req, res, next) => {
 
   const { valid, errors } = validateAdminLoginData(adminLoginData);
 
-  if (!valid) return res.status(400).json(errors);
+  if (!valid) return next(createError(400, errors));
 
   // Authenticate user
   try {
@@ -33,7 +33,6 @@ adminAuthRouter.post("/login", async (req, res, next) => {
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
-     
     return next(createError(500));
   }
 });
@@ -48,7 +47,6 @@ adminAuthRouter.post("/me", async (req, res, next) => {
       login: adminDoc?.login,
     });
   } catch (err) {
-     
     return next(createError(500));
   }
 });

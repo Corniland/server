@@ -25,7 +25,7 @@ userAuthRouter.post("/register", async (req, res, next) => {
 
   const { valid, errors } = validateUserSignupData(newUser);
 
-  if (!valid) return res.status(400).json(errors);
+  if (!valid) return next(createError(400, errors));
 
   //checking if user doesn't already exist in DB
   const userUsernameDoc = await UserModel.findOne({ username: newUser.username });
@@ -66,7 +66,7 @@ userAuthRouter.post("/login", async (req, res, next) => {
 
   const { valid, errors } = validateUserLoginData(userLoginData);
 
-  if (!valid) return res.status(400).json(errors);
+  if (!valid) return next(createError(400, errors));
 
   // Authenticate user
   // checking if user exists in DB
