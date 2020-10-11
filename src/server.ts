@@ -3,6 +3,8 @@ require("dotenv-safe").config();
 
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
+import helmet from "helmet";
 
 import routes from "./routes/indexRoutes";
 
@@ -24,6 +26,12 @@ process.on("unhandledRejection", async (err) => {
 
 const app = express();
 
+app.use(helmet());
+app.use(
+  cors({
+    exposedHeaders: ["X-Total-Count"],
+  })
+);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
