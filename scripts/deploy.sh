@@ -6,6 +6,7 @@ cd $DIR/..
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$HOME/end.sh" ] && \. "$HOME/env.sh"  # This loads nvm
 
 npm install --only=prod
 pm2 restart ecosystem.config.js
