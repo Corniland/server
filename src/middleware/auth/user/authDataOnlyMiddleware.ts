@@ -1,33 +1,25 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv-safe").config();
-
-import { Request, Response } from "express";
-import { Next } from "compose-middleware";
+import createError from "http-errors";
+import express, { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import bearerToken from "express-bearer-token";
+import { compose } from "compose-middleware";
 
-const authDataOnlyMiddleware = async (req: Request, res: Response, next: Next) => {
-  // parsing JWT token.
-  const authHeader = req.headers["authorization"];
-  const userAccessToken = authHeader && authHeader?.split(" ")[1];
+const middleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.token == null) return next(createError(401));
 
-  if (userAccessToken == null) return res.sendStatus(401);
+  let admin;
 
-  const TOKEN = process.env.ACCESS_TOKEN_SECRET;
+  try {
+    admin = jwt.verify(req.token, process.env.JWT_SECRET_USER);
+  } catch (err) {
+    return next(createError(401));
+  }
 
-  let user;
-
-  if (TOKEN === undefined) console.log("No secret access token in env");
-  else
-    try {
-      user = jwt.verify(userAccessToken, TOKEN);
-    } catch (err) {
-      console.log(err);
-      return res.sendStatus(403);
-    }
-
-  // storing user data in res.locals.user
-  res.locals.user = user;
+  // storing admin data in res.locals.admin
+  res.locals.admin = admin;
   next();
 };
+
+const authDataOnlyMiddleware = (): express.RequestHandler => compose([bearerToken(), middleware]);
 
 export default authDataOnlyMiddleware;

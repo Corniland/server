@@ -1,11 +1,28 @@
 import express from "express";
 import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
+import { Project, ProjectModel } from "../../models/project";
+import createError from "http-errors";
 
 const projectRouter = express.Router();
 
-projectRouter.get("/", (req, res) => {
-  res.send("list of projects");
+projectRouter.get("/", async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const projectDocs = await ProjectModel.find({ published: true });
+
+    const projects: Project[] = [];
+    projectDocs.forEach((project) =>
+      projects.push({
+        id: project.id,
+        ...project.toJSON(),
+      })
+    );
+
+    return res.json(projects);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
 projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {

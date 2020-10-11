@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-const MONGODB_CONNECTION = process.env.MONGODB_CONNECTION || "mongodb://127.0.0.1/cornidev";
 
-mongoose.connect(MONGODB_CONNECTION, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 

@@ -1,33 +1,25 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv-safe").config();
-
-import { Request, Response } from "express";
-import { Next } from "compose-middleware";
+import createError from "http-errors";
+import express, { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { compose } from "compose-middleware";
+import bearerToken from "express-bearer-token";
 
-const adminAuthDataOnlyMiddleware = async (req: Request, res: Response, next: Next) => {
-  // parsing JWT token.
-  const authHeader = req.headers["authorization"];
-  const adminAccessToken = authHeader && authHeader?.split(" ")[1];
-
-  if (adminAccessToken == null) return res.sendStatus(401);
-
-  const TOKEN = process.env.ADMIN_ACCESS_TOKEN_SECRET;
+const middleware = (req: Request, res: Response, next: NextFunction) => {
+  if (req.token == null) return next(createError(401));
 
   let admin;
 
-  if (TOKEN === undefined) console.log("No secret access token in env");
-  else
-    try {
-      admin = jwt.verify(adminAccessToken, TOKEN);
-    } catch (err) {
-      console.log(err);
-      return res.sendStatus(403);
-    }
+  try {
+    admin = jwt.verify(req.token, process.env.JWT_SECRET_ADMIN);
+  } catch (err) {
+    return next(createError(401));
+  }
 
   // storing admin data in res.locals.admin
   res.locals.admin = admin;
   next();
 };
+
+const adminAuthDataOnlyMiddleware = (): express.RequestHandler => compose([bearerToken(), middleware]);
 
 export default adminAuthDataOnlyMiddleware;
