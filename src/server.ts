@@ -6,6 +6,8 @@ import bodyParser from "body-parser";
 
 import routes from "./routes/indexRoutes";
 
+import "./mongodb/db";
+
 process.on("uncaughtException", async (err) => {
   console.error(`Uncaught Exception: ${err.stack}`);
   if (process.env.NODE_ENV === "production") return;
