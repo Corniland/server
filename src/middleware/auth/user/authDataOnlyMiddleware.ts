@@ -2,10 +2,10 @@
 require("dotenv-safe").config();
 
 import { Request, Response } from "express";
-import { Next } from "compose-middleware";
+import { Next, RequestHandler } from "compose-middleware";
 import jwt from "jsonwebtoken";
 
-const authDataOnlyMiddleware = async (req: Request, res: Response, next: Next) => {
+const authDataOnlyMiddleware = async (req: Request, res: Response, next: Next): RequestHandler => {
   // parsing JWT token.
   const authHeader = req.headers["authorization"];
   const userAccessToken = authHeader && authHeader?.split(" ")[1];
