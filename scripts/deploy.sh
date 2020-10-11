@@ -9,4 +9,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$HOME/env.sh" ] && \. "$HOME/env.sh"  # This loads nvm
 
 npm install --only=prod
-pm2 restart ecosystem.config.js --time
+pm2 delete ecosystem.config.js
+pm2 restart ecosystem.config.js --time --update-env
