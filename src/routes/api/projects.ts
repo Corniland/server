@@ -21,7 +21,6 @@ projectRouter.get("/", async (req, res, next) => {
 
     return res.json(projects);
   } catch (err) {
-     
     return next(createError(500));
   }
 });
