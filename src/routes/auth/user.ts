@@ -56,7 +56,6 @@ userAuthRouter.post("/register", async (req, res, next) => {
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
-    console.log(err);
     return next(createError(500));
   }
 });
@@ -82,7 +81,6 @@ userAuthRouter.post("/login", async (req, res, next) => {
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
-    console.log(err);
     return next(createError(500));
   }
 });
@@ -101,7 +99,6 @@ userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res, next) => {
       banned: userDoc?.banned,
     });
   } catch (err) {
-    console.log(err);
     return next(createError(500));
   }
 });

@@ -33,7 +33,7 @@ adminAuthRouter.post("/login", async (req, res, next) => {
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
-    console.log(err);
+     
     return next(createError(500));
   }
 });
@@ -48,7 +48,7 @@ adminAuthRouter.post("/me", async (req, res, next) => {
       login: adminDoc?.login,
     });
   } catch (err) {
-    console.log(err);
+     
     return next(createError(500));
   }
 });
