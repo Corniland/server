@@ -21,7 +21,6 @@ userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res, next) => {
       liked_projects: userDoc.liked_projects,
     });
   } catch (err) {
-    console.log(err);
     return next(createError(500));
   }
 });
@@ -61,7 +60,6 @@ userRouter.put("/:userId", authWithAcessMiddleware, async (req, res, next) => {
 
     res.status(200).json({ email: userDoc.email, username: userDoc.username });
   } catch (err) {
-    console.log(err);
     return next(createError(500));
   }
 });

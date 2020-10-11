@@ -12,8 +12,7 @@ const middleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     admin = jwt.verify(req.token, process.env.JWT_SECRET_USER);
   } catch (err) {
-    console.log(err);
-    return next(createError(403, err.message));
+    return next(createError(401));
   }
 
   // storing admin data in res.locals.admin

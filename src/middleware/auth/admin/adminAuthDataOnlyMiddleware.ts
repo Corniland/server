@@ -5,15 +5,14 @@ import { compose } from "compose-middleware";
 import bearerToken from "express-bearer-token";
 
 const middleware = (req: Request, res: Response, next: NextFunction) => {
-  if (req.token == null) return res.sendStatus(401);
+  if (req.token == null) return next(createError(401));
 
   let admin;
 
   try {
     admin = jwt.verify(req.token, process.env.JWT_SECRET_ADMIN);
   } catch (err) {
-    console.log(err);
-    return next(createError(401, "Unauthorized access"));
+    return next(createError(401));
   }
 
   // storing admin data in res.locals.admin
