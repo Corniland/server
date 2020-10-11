@@ -9,7 +9,7 @@ const projectRouter = express.Router();
 projectRouter.get("/", async (req, res, next) => {
   try {
     //Find projects from DB
-    const projectDocs = await ProjectModel.find({ published: true });
+    const projectDocs = await ProjectModel.find({ published: true }, "-_id");
 
     const projects: Project[] = [];
     projectDocs.forEach((project) =>
