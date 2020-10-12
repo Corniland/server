@@ -3,6 +3,9 @@ import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMid
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
 import { Project, ProjectModel } from "../../models/project";
 import createError from "http-errors";
+import { Ref } from "@typegoose/typegoose";
+import { User } from "../../models/user";
+import { Types } from "mongoose";
 
 const projectRouter = express.Router();
 
@@ -24,6 +27,10 @@ projectRouter.get("/:projectId", authDataOnlyMiddleware, async (req, res, next) 
 
     if (!projectDoc) return next(createError(404, "project not found"));
 
+    const members: Types.ObjectId[] = <Types.ObjectId[]>projectDoc.members;
+    members.push(<Types.ObjectId>projectDoc.owner);
+    if (!projectDoc.published && !members.includes(<Types.ObjectId>res.locals.user)) return next(createError(403));
+
     return res.json(projectDoc);
   } catch (err) {
     return next(createError(500));
@@ -32,10 +39,6 @@ projectRouter.get("/:projectId", authDataOnlyMiddleware, async (req, res, next) 
 
 projectRouter.post("/", authWithAcessMiddleware, (req, res) => {
   res.send("posted a project");
-});
-
-projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {
-  res.send("a specific project");
 });
 
 projectRouter.put("/:projectId", authWithAcessMiddleware, (req, res) => {
