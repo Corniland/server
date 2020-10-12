@@ -27,9 +27,9 @@ projectRouter.get("/:projectId", authDataOnlyMiddleware, async (req, res, next) 
 
     if (!projectDoc) return next(createError(404, "project not found"));
 
-    const members: Types.ObjectId[] = <Types.ObjectId[]>projectDoc.members;
-    members.push(<Types.ObjectId>projectDoc.owner);
-    if (!projectDoc.published && !members.includes(<Types.ObjectId>res.locals.user)) return next(createError(403));
+    const members = projectDoc.members;
+    members?.push(projectDoc.owner);
+    if (!projectDoc.published && !members?.includes(res.locals.user._id)) return next(createError(403));
 
     return res.json(projectDoc);
   } catch (err) {
