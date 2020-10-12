@@ -1,6 +1,15 @@
-import { prop, getModelForClass } from "@typegoose/typegoose";
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
 import { hashPassword } from "../util/authUtil";
 
+@modelOptions({
+  schemaOptions: {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    id: true,
+  },
+})
 export class Admin {
   @prop()
   public login?: string;

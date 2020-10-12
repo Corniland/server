@@ -9,24 +9,25 @@ const projectRouter = express.Router();
 projectRouter.get("/", async (req, res, next) => {
   try {
     //Find projects from DB
-    const projectDocs = await ProjectModel.find({ published: true }, "-_id");
+    const projectDocs = await ProjectModel.find({ published: true });
 
-    const projects: Project[] = [];
-    projectDocs.forEach((project) =>
-      projects.push({
-        id: project.id,
-        ...project.toJSON(),
-      })
-    );
-
-    return res.json(projects);
+    return res.json(projectDocs);
   } catch (err) {
     return next(createError(500));
   }
 });
 
-projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {
-  res.send("a specific project");
+projectRouter.get("/:projectId", authDataOnlyMiddleware, async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const projectDoc = await ProjectModel.findById(req.params.projectId, { published: true });
+
+    if (!projectDoc) return next(createError(404, "project not found"));
+
+    return res.json(projectDoc);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
 projectRouter.post("/", authWithAcessMiddleware, (req, res) => {
