@@ -3,8 +3,8 @@ import { validateUserSignupData, validateUserLoginData } from "../../util/valida
 import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
 import createError from "http-errors";
+import { needUserAuth } from "../../middleware/auth/user";
 
 export const userAuthRouter = express.Router();
 
@@ -40,16 +40,15 @@ userAuthRouter.post("/register", async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(newUser.password, userPasswordSalt);
 
     // Add user to DB
-    const _newUserModel = (
-      await UserModel.create({
-        email: newUser.email,
-        username: newUser.username,
-        password: hashedPassword,
-        password_salt: userPasswordSalt,
-        private_profile: false,
-        banned: false,
-      })
-    ).save();
+    const newUserModel = new UserModel({
+      email: newUser.email,
+      username: newUser.username,
+      password: hashedPassword,
+      password_salt: userPasswordSalt,
+      private_profile: false,
+      banned: false,
+    });
+    await newUserModel.save();
 
     // Return auth token;
     const accessToken = jwt.sign({ email: newUser.email, username: newUser.username }, process.env.JWT_SECRET_USER);
@@ -86,7 +85,7 @@ userAuthRouter.post("/login", async (req, res, next) => {
 });
 
 //user whomai route
-userAuthRouter.post("/me", authDataOnlyMiddleware, async (req, res, next) => {
+userAuthRouter.post("/me", needUserAuth, async (req, res, next) => {
   try {
     const userDoc = await UserModel.findOne({ username: res.locals.user.username }); // look for the user in db
 

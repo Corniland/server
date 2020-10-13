@@ -1,8 +1,7 @@
 import express from "express";
-import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
-import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
 import { ProjectModel } from "../../models/project";
 import createError from "http-errors";
+import { needUserAuth, populateUser } from "../../middleware/auth/user";
 
 const projectRouter = express.Router();
 
@@ -17,7 +16,7 @@ projectRouter.get("/", async (req, res, next) => {
   }
 });
 
-projectRouter.get("/:projectId", authDataOnlyMiddleware, async (req, res, next) => {
+projectRouter.get("/:projectId", populateUser, async (req, res, next) => {
   try {
     //Find projects from DB
     const projectDoc = await ProjectModel.findById(req.params.projectId, { published: true });
@@ -34,31 +33,31 @@ projectRouter.get("/:projectId", authDataOnlyMiddleware, async (req, res, next) 
   }
 });
 
-projectRouter.post("/", authWithAcessMiddleware, (req, res) => {
+projectRouter.post("/", needUserAuth, (req, res) => {
   res.send("posted a project");
 });
 
-projectRouter.put("/:projectId", authWithAcessMiddleware, (req, res) => {
+projectRouter.put("/:projectId", needUserAuth, (req, res) => {
   res.send("updated a project");
 });
 
-projectRouter.delete("/:projectId", authWithAcessMiddleware, (req, res) => {
+projectRouter.delete("/:projectId", needUserAuth, (req, res) => {
   res.send("deleted a project");
 });
 
-projectRouter.post("/:projectId/member/:userId", authWithAcessMiddleware, (req, res) => {
+projectRouter.post("/:projectId/member/:userId", needUserAuth, (req, res) => {
   res.send("added a user to a project");
 });
 
-projectRouter.delete("/:projectId/member/:userId", authWithAcessMiddleware, (req, res) => {
+projectRouter.delete("/:projectId/member/:userId", needUserAuth, (req, res) => {
   res.send("removed a user from a project");
 });
 
-projectRouter.post("/:projectId/like", authWithAcessMiddleware, (req, res) => {
+projectRouter.post("/:projectId/like", needUserAuth, (req, res) => {
   res.send("liked a project");
 });
 
-projectRouter.delete("/:projectId/like", authWithAcessMiddleware, (req, res) => {
+projectRouter.delete("/:projectId/like", needUserAuth, (req, res) => {
   res.send("unliked a project");
 });
 

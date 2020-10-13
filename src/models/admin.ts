@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { prop, getModelForClass } from "@typegoose/typegoose";
 
 import { hashPassword } from "../util/authUtil";
@@ -13,7 +11,7 @@ export interface AdminJWTPayload {
 
 export class Admin extends BaseModel {
   @prop()
-  public login?: string;
+  public login!: string;
   @prop()
   public password!: string;
   @prop()
@@ -22,6 +20,13 @@ export class Admin extends BaseModel {
   async checkPassword(password: string): Promise<boolean> {
     const hashedPassword: string = await hashPassword(password, this.password_salt);
     return this.password === hashedPassword;
+  }
+
+  getJWTPayload(): AdminJWTPayload {
+    return {
+      id: this._id.toHexString(),
+      login: this.login,
+    };
   }
 }
 

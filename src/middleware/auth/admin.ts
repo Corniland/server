@@ -5,8 +5,6 @@ import { compose } from "compose-middleware";
 import expressBearerToken from "express-bearer-token";
 import { AdminJWTPayload, AdminModel } from "../../models/admin";
 
-export default populateAdmin;
-
 export function getAdminJWTPayload(bearerToken: string): AdminJWTPayload | null {
   try {
     return jwt.verify(bearerToken, process.env.JWT_SECRET_ADMIN) as AdminJWTPayload;

@@ -1,13 +1,13 @@
 import express from "express";
-import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
-import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
-import { UserModel } from "../../models/user";
 import createError from "http-errors";
 import bcrypt from "bcrypt";
 
+import { UserModel } from "../../models/user";
+import { populateUser, needUserAuth } from "../../middleware/auth/user";
+
 const userRouter = express.Router();
 
-userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res, next) => {
+userRouter.get("/:userId", populateUser, async (req, res, next) => {
   try {
     const userId = req.params.userId;
     //Find the user in db
@@ -25,7 +25,7 @@ userRouter.get("/:userId", authDataOnlyMiddleware, async (req, res, next) => {
   }
 });
 
-userRouter.put("/:userId", authWithAcessMiddleware, async (req, res, next) => {
+userRouter.put("/:userId", needUserAuth, async (req, res, next) => {
   const userId = req.params.userId;
   const newUserSettings = req.body; //Retreive new settings
   //Find the user in db
