@@ -1,8 +1,9 @@
 import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
 
+import BaseModel from "./base";
 import { User } from "./user";
 
-export class Project {
+export class Project extends BaseModel {
   @prop()
   public title?: string;
   @prop()

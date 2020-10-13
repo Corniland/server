@@ -1,17 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { prop, getModelForClass, Ref, modelOptions } from "@typegoose/typegoose";
-import { Project } from "./project";
+import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
+
 import { hashPassword } from "../util/authUtil";
 
-@modelOptions({
-  schemaOptions: {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-    id: true,
-  },
-})
-export class User {
+import BaseModel from "./base";
+import { Project } from "./project";
+
+export class User extends BaseModel {
   @prop()
   public email?: string;
   @prop()

@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose";
+import { prop, getModelForClass } from "@typegoose/typegoose";
+
 import { hashPassword } from "../util/authUtil";
 
-@modelOptions({
-  schemaOptions: {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-    id: true,
-  },
-})
-export class Admin {
+import BaseModel from "./base";
+
+export interface AdminJWTPayload {
+  id: string;
+  login: string;
+}
+
+export class Admin extends BaseModel {
   @prop()
   public login?: string;
   @prop()
