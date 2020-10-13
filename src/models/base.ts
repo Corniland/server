@@ -1,4 +1,5 @@
 import { modelOptions } from "@typegoose/typegoose";
+import { Base } from "@typegoose/typegoose/lib/defaultClasses";
 
 @modelOptions({
   schemaOptions: {
@@ -6,4 +7,4 @@ import { modelOptions } from "@typegoose/typegoose";
     toObject: { virtuals: true },
   },
 })
-export default class BaseModel {}
+export default class BaseModel extends Base {}
