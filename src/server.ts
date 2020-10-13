@@ -39,11 +39,12 @@ app.use(express.json());
 app.use(routes);
 
 app.listen(process.env.PORT, () => {
-  const networkInterfaces: os.NetworkInterfaceInfo[] = [];
-  Object.values(os.networkInterfaces()).forEach((a) => {
-    if (a) networkInterfaces.push(...a);
-  });
-  const ni = networkInterfaces.find((i) => {
+  const networkInterfaces = Object.values(os.networkInterfaces()).reduce((newArray: os.NetworkInterfaceInfo[], a) => {
+    if (a) newArray?.push(...a);
+    return newArray;
+  }, []);
+
+  const currentNetInt = networkInterfaces.find((i) => {
     if (i.family === "IPv4") return i;
   });
 
@@ -55,7 +56,7 @@ Version: NodeJS ${chalk.bold.whiteBright(process.version)}
 
   Server running at:
     - Local:\t${chalk.cyan(`http://localhost:${chalk.bold(process.env.PORT)}/`)}
-    - Network:\t${chalk.cyan(`http://${ni?.address}:${chalk.bold(process.env.PORT)}/`)}
+    - Network:\t${chalk.cyan(`http://${currentNetInt?.address}:${chalk.bold(process.env.PORT)}/`)}
 
   Note that the development build is not optimized.
   To create a production build, run ${chalk.cyan("npm run build")}.
