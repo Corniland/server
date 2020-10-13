@@ -1,7 +1,7 @@
 import express from "express";
 
 import apiAdminRouter from "./admin/indexAPIAdmin";
-
+import adminAuthWithAccessMiddleware from "../../middleware/auth/admin/adminAuthWithAccessMiddleware";
 import users from "./users";
 import projects from "./projects";
 
@@ -11,7 +11,7 @@ const bearerToken = require("express-bearer-token");
 const router = express.Router();
 
 // API for Admin Panel
-router.use("/admin", apiAdminRouter);
+router.use("/admin", adminAuthWithAccessMiddleware, apiAdminRouter);
 
 // Normal API for normal Users
 router.use("/users", users);

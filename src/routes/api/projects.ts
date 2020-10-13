@@ -1,11 +1,8 @@
 import express from "express";
 import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
 import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
-import { Project, ProjectModel } from "../../models/project";
+import { ProjectModel } from "../../models/project";
 import createError from "http-errors";
-import { Ref } from "@typegoose/typegoose";
-import { User } from "../../models/user";
-import { Types } from "mongoose";
 
 const projectRouter = express.Router();
 

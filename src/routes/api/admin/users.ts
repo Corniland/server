@@ -1,28 +1,42 @@
 import express from "express";
+import { UserModel } from "../../../models/user";
+import createError from "http-errors";
+
 const adminUsersRouter = express.Router();
 
-//TODO: Admin Authenticate
-adminUsersRouter.get("/", (req, res) => {
-  res.send("list of all users");
+adminUsersRouter.get("/", async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const userDocs = await UserModel.find();
+
+    return res.json(userDocs);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
-//TODO: Admin Authenticate
-adminUsersRouter.get("/:userId", (req, res) => {
-  res.send("specific user data");
+adminUsersRouter.get("/:userId", async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const userDoc = await UserModel.findById(req.params.userId);
+
+    if (!userDoc) return next(createError(404, "user not found"));
+
+    return res.json(userDoc);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
-//TODO: Admin Authenticate
-adminUsersRouter.delete("/:userId", (req, res) => {
+adminUsersRouter.delete("/:userId", (req, res, next) => {
   res.send("deleted a user");
 });
 
-//TODO: Admin Authenticate
-adminUsersRouter.post("/:userId/ban", (req, res) => {
+adminUsersRouter.post("/:userId/ban", (req, res, next) => {
   res.send("banned a user");
 });
 
-//TODO: Admin Authenticate
-adminUsersRouter.delete("/:userId/ban", (req, res) => {
+adminUsersRouter.delete("/:userId/ban", (req, res, next) => {
   res.send("unbanned a user");
 });
 

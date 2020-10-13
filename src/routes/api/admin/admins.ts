@@ -1,28 +1,41 @@
 import express from "express";
+import { AdminModel } from "../../../models/admin";
+import createError from "http-errors";
 const adminAdminsRouter = express.Router();
 
-//TODO: Admin Authenticate
-adminAdminsRouter.get("/", (req, res) => {
-  res.send("list of all admins");
+adminAdminsRouter.get("/", async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const adminDocs = await AdminModel.find();
+
+    return res.json(adminDocs);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
-//TODO: Admin Authenticate
-adminAdminsRouter.post("/", (req, res) => {
+adminAdminsRouter.post("/", (req, res, next) => {
   res.send("create an admin");
 });
 
-//TODO: Admin Authenticate
-adminAdminsRouter.get("/:adminId", (req, res) => {
-  res.send("specific admin's data");
+adminAdminsRouter.get("/:adminId", async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const adminDoc = await AdminModel.findById(req.params.userId);
+
+    if (!adminDoc) return next(createError(404, "admin not found"));
+
+    return res.json(adminDoc);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
-//TODO: Admin Authenticate
-adminAdminsRouter.put("/:adminId", (req, res) => {
+adminAdminsRouter.put("/:adminId", (req, res, next) => {
   res.send("update specific admin's data");
 });
 
-//TODO: Admin Authenticate
-adminAdminsRouter.delete("/:adminId", (req, res) => {
+adminAdminsRouter.delete("/:adminId", (req, res, next) => {
   res.send("delete a specific admin");
 });
 
