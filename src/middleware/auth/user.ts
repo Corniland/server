@@ -33,7 +33,7 @@ export const populateUser: express.RequestHandler = compose([
     try {
       if (req.token) {
         const payload = getUserJWTPayload(req.token);
-        const user = await UserModel.findById(payload?.id);
+        const user = await UserModel.findOne({ username: payload?.username });
         if (!user) throw new Error("User not found");
         res.locals.user = user;
       }
