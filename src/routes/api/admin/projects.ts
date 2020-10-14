@@ -37,7 +37,7 @@ adminProjectsRouter.delete("/:projectId", async (req, res, next) => {
     if (!projectDoc) return next(createError(404, "project not found"));
     await projectDoc.deleteOne();
 
-    return res.status(200);
+    return res.sendStatus(200);
   } catch (err) {
     return next(createError(500));
   }
