@@ -3,6 +3,7 @@ import { AdminModel } from "../../models/admin";
 import { validateAdminLoginData } from "../../util/validators";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
+import { populateAdmin } from "../../middleware/auth/admin";
 
 export const adminAuthRouter = express.Router();
 
@@ -38,15 +39,7 @@ adminAuthRouter.post("/login", async (req, res, next) => {
 });
 
 //admin whoami route
-adminAuthRouter.post("/me", async (req, res, next) => {
-  try {
-    const adminDoc = await AdminModel.findOne({ login: res.locals.user.login }); // look for the user in db
-
-    // return data
-    res.status(200).json({
-      login: adminDoc?.login,
-    });
-  } catch (err) {
-    return next(createError(500));
-  }
+adminAuthRouter.get("/me", populateAdmin, async (_req, res, next) => {
+  if (res.locals.user) res.send(await res.locals.admin.getJWTPayload());
+  else next(createError(403));
 });
