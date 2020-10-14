@@ -33,6 +33,8 @@ export const validateUserSignupData = (signupData: UserRegisterData): Validation
   if (isEmpty(signupData.password)) returnErrors.errors.password = `Must not be empty`;
   if (isEmpty(signupData.username)) returnErrors.errors.username = `Must not be empty`;
 
+  returnErrors.valid = Object.keys(returnErrors.errors).length === 0;
+
   return returnErrors;
 };
 
@@ -45,6 +47,8 @@ export const validateUserLoginData = (userLoginData: UserLoginData): ValidationE
   if (isEmpty(userLoginData.email)) returnErrors.errors.email = `Must not be empty`;
   if (isEmpty(userLoginData.password)) returnErrors.errors.password = `Must not be empty`;
 
+  returnErrors.valid = Object.keys(returnErrors.errors).length === 0;
+
   return returnErrors;
 };
 
@@ -56,6 +60,8 @@ export const validateAdminLoginData = (adminLoginData: AdminLoginData): Validati
 
   if (isEmpty(adminLoginData.login)) returnErrors.errors.login = `Must not be empty`;
   if (isEmpty(adminLoginData.password)) returnErrors.errors.password = `Must not be empty`;
+
+  returnErrors.valid = Object.keys(returnErrors.errors).length === 0;
 
   return returnErrors;
 };

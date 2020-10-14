@@ -24,9 +24,9 @@ adminAuthRouter.post("/login", async (req, res, next) => {
   try {
     //checking if the admin exists in DB
     const adminLoginDoc = await AdminModel.findOne({ login: adminLoginData.login });
-    if (!adminLoginDoc) return next(createError(400, "email or password is incorrect"));
+    if (!adminLoginDoc) return next(createError(400, "login or password is incorrect"));
     else if (!(await adminLoginDoc.checkPassword(adminLoginData.password))) {
-      return next(createError(400, "email or password is incorrect"));
+      return next(createError(400, "login or password is incorrect"));
     }
 
     // Return auth token;

@@ -28,8 +28,19 @@ adminProjectsRouter.get("/:projectId", async (req, res, next) => {
   }
 });
 
-adminProjectsRouter.delete("/:projectId", (req, res, next) => {
-  res.send("deleted a project");
+//TODO: Admin Authenticate
+adminProjectsRouter.delete("/:projectId", async (req, res, next) => {
+  try {
+    //Find projects from DB
+    const projectDoc = await ProjectModel.findById(req.params.projectId);
+
+    if (!projectDoc) return next(createError(404, "project not found"));
+    await projectDoc.deleteOne();
+
+    return res.status(200);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
 export default adminProjectsRouter;
