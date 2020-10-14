@@ -1,6 +1,7 @@
 import express from "express";
 
 import { needAdminAuth } from "../../middleware/auth/admin";
+import { blockBannedUsers } from "../../middleware/auth/user";
 
 import apiAdminRouter from "./admin/indexAPIAdmin";
 import users from "./users";
@@ -12,6 +13,7 @@ const router = express.Router();
 router.use("/admin", /*needAdminAuth, */ apiAdminRouter);
 
 // Normal API for normal Users
+router.use(blockBannedUsers);
 router.use("/users", users);
 router.use("/projects", projects);
 
