@@ -1,42 +1,77 @@
 import express from "express";
-import { AdminModel } from "../../../models/admin";
 import createError from "http-errors";
+import _ from "lodash";
+
+import { AdminModel } from "../../../models/admin";
+
 const adminAdminsRouter = express.Router();
 
-adminAdminsRouter.get("/", async (req, res, next) => {
+adminAdminsRouter.get("/", async (_req, res, next) => {
   try {
-    //Find projects from DB
-    const adminDocs = await AdminModel.find();
+    const admins = await AdminModel.find({}, { login: true, id: true });
 
-    return res.json(adminDocs);
+    res.json(admins);
   } catch (err) {
-    return next(createError(500));
+    next(createError(500));
   }
 });
 
-adminAdminsRouter.post("/", (req, res, next) => {
-  res.send("create an admin");
-});
-
-adminAdminsRouter.get("/:adminId", async (req, res, next) => {
+adminAdminsRouter.post("/", async (req, res, next) => {
   try {
-    //Find projects from DB
-    const adminDoc = await AdminModel.findById(req.params.userId);
+    const admin = new AdminModel();
 
-    if (!adminDoc) return next(createError(404, "admin not found"));
+    if (!req.body.login || !req.body.password) return next(createError(400));
 
-    return res.json(adminDoc);
+    admin.login = req.body.login;
+    admin.password = req.body.password;
+    await admin.save();
+
+    res.status(201).json(_.pick(admin, "login", "id"));
   } catch (err) {
-    return next(createError(500));
+    next(createError(500));
   }
 });
 
-adminAdminsRouter.put("/:adminId", (req, res, next) => {
-  res.send("update specific admin's data");
+adminAdminsRouter.get("/:id", async (req, res, next) => {
+  try {
+    const admin = await AdminModel.findById(req.params.id, { login: true, id: true });
+
+    if (!admin) return next(createError(404));
+
+    res.json(admin);
+  } catch (err) {
+    next(createError(500));
+  }
 });
 
-adminAdminsRouter.delete("/:adminId", (req, res, next) => {
-  res.send("delete a specific admin");
+adminAdminsRouter.put("/:id", async (req, res, next) => {
+  try {
+    const admin = await AdminModel.findById(req.params.id);
+
+    if (!admin) return next(createError(404));
+
+    if (req.body.login) admin.login = req.body.login;
+    if (req.body.password) admin.password = req.body.password;
+    await admin.save();
+
+    res.send(_.pick(admin, "login", "id"));
+  } catch (err) {
+    next(createError(500));
+  }
+});
+
+adminAdminsRouter.delete("/:id", async (req, res, next) => {
+  try {
+    const admin = await AdminModel.findById(req.params.id);
+
+    if (!admin) return next(createError(404));
+
+    await admin.deleteOne();
+
+    res.sendStatus(200);
+  } catch (err) {
+    next(createError(500));
+  }
 });
 
 export default adminAdminsRouter;

@@ -1,6 +1,5 @@
-import { prop, getModelForClass } from "@typegoose/typegoose";
-
-import { hashPassword } from "../util/authUtil";
+import { prop, getModelForClass, pre } from "@typegoose/typegoose";
+import bcrypt from "bcrypt";
 
 import BaseModel from "./base";
 
@@ -9,6 +8,13 @@ export interface AdminJWTPayload {
   login: string;
 }
 
+@pre<Admin>("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password_salt = await Admin.generateSalt(12);
+  this.password = await this.hashPassword(this.password);
+  next();
+})
 export class Admin extends BaseModel {
   @prop()
   public login!: string;
@@ -17,9 +23,16 @@ export class Admin extends BaseModel {
   @prop()
   public password_salt!: string;
 
+  static async generateSalt(length: number): Promise<string> {
+    return await bcrypt.genSalt(length);
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, this.password_salt);
+  }
+
   async checkPassword(password: string): Promise<boolean> {
-    const hashedPassword: string = await hashPassword(password, this.password_salt);
-    return this.password === hashedPassword;
+    return this.password === (await this.hashPassword(password));
   }
 
   getJWTPayload(): AdminJWTPayload {
