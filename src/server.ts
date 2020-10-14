@@ -12,8 +12,7 @@ import routes from "./routes/indexRoutes";
 import "./mongodb/db";
 
 process.on("uncaughtException", async (err) => {
-  console.log(err);
-  console.error(`Uncaught Exception: ${err.stack}`);
+  console.error(`Uncaught Exception:`, err);
   if (process.env.NODE_ENV === "production") return;
   console.error(`Exiting with status 1 in 3s`);
   setTimeout(() => process.exit(1), 3000);
