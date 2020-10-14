@@ -51,7 +51,7 @@ userAuthRouter.post("/register", async (req, res, next) => {
     await newUserModel.save();
 
     // Return auth token;
-    const accessToken = jwt.sign({ email: newUser.email, username: newUser.username }, process.env.JWT_SECRET_USER);
+    const accessToken = jwt.sign(newUserModel.getJWTPayload(), process.env.JWT_SECRET_USER);
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
@@ -76,7 +76,7 @@ userAuthRouter.post("/login", async (req, res, next) => {
   }
   try {
     // Return auth token;
-    const accessToken = jwt.sign({ email: userEmailDoc.email, username: userEmailDoc.username }, process.env.JWT_SECRET_USER);
+    const accessToken = jwt.sign(userEmailDoc.getJWTPayload(), process.env.JWT_SECRET_USER);
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {
