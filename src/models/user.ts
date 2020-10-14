@@ -6,7 +6,7 @@ import BaseModel from "./base";
 import { Project } from "./project";
 
 export interface UserJWTPayload {
-  id: string;
+  email: string;
   username: string;
 }
 
