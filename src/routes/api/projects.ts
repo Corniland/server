@@ -16,18 +16,18 @@ projectRouter.get("/", async (req, res, next) => {
   }
 });
 
-projectRouter.get("/:projectId", populateUser, async (req, res, next) => {
+projectRouter.get("/:projectId", populateUser, async (req, res: express.Response, next) => {
   try {
     //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId, { published: true });
+    const project = await ProjectModel.findById(req.params.projectId);
 
-    if (!projectDoc) return next(createError(404, "project not found"));
+    if (!project) return next(createError(404));
 
-    const members = projectDoc.members;
-    members?.push(projectDoc.owner);
-    if (!projectDoc.published && !members?.includes(res.locals.user._id)) return next(createError(403));
+    const members = project.members;
+    members?.push(project.owner);
+    if (!project.published && !members?.includes(res.locals.user?._id)) return next(createError(403));
 
-    return res.json(projectDoc);
+    return res.json(project);
   } catch (err) {
     return next(createError(500));
   }
