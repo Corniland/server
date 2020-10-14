@@ -29,7 +29,7 @@ adminAuthRouter.post("/login", async (req, res, next) => {
     }
 
     // Return auth token;
-    const accessToken = jwt.sign({ login: adminLoginDoc.login }, process.env.JWT_SECRET_ADMIN);
+    const accessToken = jwt.sign(adminLoginDoc.getJWTPayload(), process.env.JWT_SECRET_ADMIN);
 
     res.status(200).json({ jwt: `Bearer ${accessToken}` });
   } catch (err) {

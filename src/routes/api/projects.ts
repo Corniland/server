@@ -1,8 +1,7 @@
 import express from "express";
-import authWithAcessMiddleware from "../../middleware/auth/user/authWithAcessMiddleware";
-import authDataOnlyMiddleware from "../../middleware/auth/user/authDataOnlyMiddleware";
-import { Project, ProjectModel } from "../../models/project";
+import { ProjectModel } from "../../models/project";
 import createError from "http-errors";
+import { needUserAuth, populateUser } from "../../middleware/auth/user";
 
 const projectRouter = express.Router();
 
@@ -11,53 +10,54 @@ projectRouter.get("/", async (req, res, next) => {
     //Find projects from DB
     const projectDocs = await ProjectModel.find({ published: true });
 
-    const projects: Project[] = [];
-    projectDocs.forEach((project) =>
-      projects.push({
-        id: project.id,
-        ...project.toJSON(),
-      })
-    );
-
-    return res.json(projects);
+    return res.json(projectDocs);
   } catch (err) {
     return next(createError(500));
   }
 });
 
-projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {
-  res.send("a specific project");
+projectRouter.get("/:projectId", populateUser, async (req, res: express.Response, next) => {
+  try {
+    //Find projects from DB
+    const project = await ProjectModel.findById(req.params.projectId);
+
+    if (!project) return next(createError(404));
+
+    const members = project.members;
+    members?.push(project.owner);
+    if (!project.published && !members?.includes(res.locals.user?._id)) return next(createError(403));
+
+    return res.json(project);
+  } catch (err) {
+    return next(createError(500));
+  }
 });
 
-projectRouter.post("/", authWithAcessMiddleware, (req, res) => {
+projectRouter.post("/", needUserAuth, (req, res) => {
   res.send("posted a project");
 });
 
-projectRouter.get("/:projectId", authDataOnlyMiddleware, (req, res) => {
-  res.send("a specific project");
-});
-
-projectRouter.put("/:projectId", authWithAcessMiddleware, (req, res) => {
+projectRouter.put("/:projectId", needUserAuth, (req, res) => {
   res.send("updated a project");
 });
 
-projectRouter.delete("/:projectId", authWithAcessMiddleware, (req, res) => {
+projectRouter.delete("/:projectId", needUserAuth, (req, res) => {
   res.send("deleted a project");
 });
 
-projectRouter.post("/:projectId/member/:userId", authWithAcessMiddleware, (req, res) => {
+projectRouter.post("/:projectId/member/:userId", needUserAuth, (req, res) => {
   res.send("added a user to a project");
 });
 
-projectRouter.delete("/:projectId/member/:userId", authWithAcessMiddleware, (req, res) => {
+projectRouter.delete("/:projectId/member/:userId", needUserAuth, (req, res) => {
   res.send("removed a user from a project");
 });
 
-projectRouter.post("/:projectId/like", authWithAcessMiddleware, (req, res) => {
+projectRouter.post("/:projectId/like", needUserAuth, (req, res) => {
   res.send("liked a project");
 });
 
-projectRouter.delete("/:projectId/like", authWithAcessMiddleware, (req, res) => {
+projectRouter.delete("/:projectId/like", needUserAuth, (req, res) => {
   res.send("unliked a project");
 });
 

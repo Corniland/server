@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv-safe").config();
 
+import os from "os";
+import chalk from "chalk";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -37,4 +39,27 @@ app.use(express.json());
 
 app.use(routes);
 
-app.listen(process.env.PORT, () => console.log(`Server running at port: ${process.env.PORT}`));
+app.listen(process.env.PORT, () => {
+  const networkInterfaces = Object.values(os.networkInterfaces()).reduce((newArray: os.NetworkInterfaceInfo[], a) => {
+    if (a) newArray?.push(...a);
+    return newArray;
+  }, []);
+
+  const currentNetInt = networkInterfaces.find((i) => {
+    if (i.family === "IPv4") return i;
+  });
+
+  console.log(`
+${chalk.bgGreen.black(" DONE ")} ${chalk.green("Compiled successfully")}
+
+${chalk.green("No type errors found")}
+Version: NodeJS ${chalk.bold.whiteBright(process.version)}
+
+  Server running at:
+    - Local:\t${chalk.cyan(`http://localhost:${chalk.bold(process.env.PORT)}/`)}
+    - Network:\t${chalk.cyan(`http://${currentNetInt?.address}:${chalk.bold(process.env.PORT)}/`)}
+
+  Note that the development build is not optimized.
+  To create a production build, run ${chalk.cyan("npm run build")}.
+`);
+});
