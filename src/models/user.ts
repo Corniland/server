@@ -11,19 +11,19 @@ export interface UserJWTPayload {
 }
 
 export class User extends BaseModel {
-  @prop()
+  @prop({ required: true })
   public email!: string;
-  @prop()
+  @prop({ required: true })
   public username!: string;
-  @prop()
+  @prop({ required: true })
   public password!: string;
-  @prop()
+  @prop({ required: true })
   public password_salt!: string;
-  @prop({ ref: "Project" })
+  @prop({ ref: Project })
   public liked_projects!: Ref<Project>[];
-  @prop({ default: true })
+  @prop({ required: true, default: true })
   public private_profile!: boolean;
-  @prop({ default: false })
+  @prop({ required: true, default: false })
   public banned!: boolean;
 
   async checkPassword(password: string): Promise<boolean> {
