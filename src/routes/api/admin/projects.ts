@@ -32,10 +32,10 @@ adminProjectsRouter.get("/:projectId", async (req, res, next) => {
 adminProjectsRouter.delete("/:projectId", async (req, res, next) => {
   try {
     //Find projects from DB
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const projectDoc = await ProjectModel.deleteOne({ _id: req.params.projectId });
+    const projectDoc = await ProjectModel.findById(req.params.projectId);
 
     if (!projectDoc) return next(createError(404, "project not found"));
+    projectDoc.deleteOne();
 
     return res.json(projectDoc);
   } catch (err) {
