@@ -7,6 +7,7 @@ import { Project } from "./project";
 
 export interface UserJWTPayload {
   id: string;
+  email: string;
   username: string;
 }
 
@@ -34,6 +35,7 @@ export class User extends BaseModel {
   getJWTPayload(): UserJWTPayload {
     return {
       id: this._id.toHexString(),
+      email: this.email,
       username: this.username,
     };
   }

@@ -5,7 +5,7 @@ const adminUsersRouter = express.Router();
 
 adminUsersRouter.get("/", async (_req, res, next) => {
   try {
-    const userDocs = await UserModel.find();
+    const userDocs = await UserModel.find({}, { password: false, password_salt: false });
 
     return res.json(userDocs);
   } catch (err) {
@@ -15,7 +15,7 @@ adminUsersRouter.get("/", async (_req, res, next) => {
 
 adminUsersRouter.get("/:id", async (req, res, next) => {
   try {
-    const userDoc = await UserModel.findById(req.params.id);
+    const userDoc = await UserModel.findById(req.params.id, { password: false, password_salt: false });
 
     if (!userDoc) return next(createError(404, "user not found"));
 
