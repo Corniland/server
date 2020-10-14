@@ -27,50 +27,49 @@ adminUsersRouter.get("/:userId", async (req, res, next) => {
   }
 });
 
-//TODO: Admin Authenticate
 adminUsersRouter.delete("/:userId", async (req, res, next) => {
   try {
     //Find projects from DB
     const userDoc = await UserModel.findById(req.params.userId);
 
     if (!userDoc) return next(createError(404, "user not found"));
-    userDoc.deleteOne();
+    await userDoc.deleteOne();
 
-    return res.json(userDoc);
+    return res.status(200);
   } catch (err) {
     return next(createError(500));
   }
 });
 
-//TODO: Admin Authenticate
 adminUsersRouter.post("/:userId/ban", async (req, res, next) => {
   try {
     //Find projects from DB
     const userDoc = await UserModel.findById(req.params.userId);
 
     if (!userDoc) return next(createError(404, "user not found"));
+    if (userDoc.banned) return next(createError(400, "user already banned"));
 
     userDoc.banned = true;
     await userDoc.save();
 
-    return res.json(userDoc);
+    return res.status(200);
   } catch (err) {
     return next(createError(500));
   }
 });
 
-//TODO: Admin Authenticate
 adminUsersRouter.delete("/:userId/ban", async (req, res, next) => {
   try {
     //Find projects from DB
     const userDoc = await UserModel.findById(req.params.userId);
 
     if (!userDoc) return next(createError(404, "user not found"));
+    if (!userDoc.banned) return next(createError(400, "user already not banned"));
 
     userDoc.banned = false;
     await userDoc.save();
 
-    return res.json(userDoc);
+    return res.status(200);
   } catch (err) {
     return next(createError(500));
   }

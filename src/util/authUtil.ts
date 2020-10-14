@@ -5,7 +5,5 @@ export async function generateSalt(): Promise<string> {
 }
 
 export async function hashPassword(password: string, passwordSalt: string): Promise<string> {
-  console.log(password);
-  console.log(passwordSalt);
   return await bcrypt.hash(password, passwordSalt);
 }
