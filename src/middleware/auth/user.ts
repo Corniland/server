@@ -51,3 +51,11 @@ export const needUserAuth = compose([
     else next(createHttpError(401));
   },
 ]);
+
+export const blockBannedUsers = compose([
+  populateUser,
+  (_req: express.Request, res: express.Response, next: express.NextFunction): void => {
+    if (res.locals.user?.banned) next(createHttpError(401));
+    else next();
+  },
+]);
