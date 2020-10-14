@@ -6,7 +6,6 @@ const adminProjectsRouter = express.Router();
 adminProjectsRouter.get("/", async (req, res, next) => {
   try {
     //Find projects from DB
-    console.log("toto");
     const projectDocs = await ProjectModel.find();
 
     return res.json(projectDocs);
