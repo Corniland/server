@@ -31,7 +31,8 @@ adminUsersRouter.get("/:userId", async (req, res, next) => {
 adminUsersRouter.delete("/:userId", async (req, res, next) => {
   try {
     //Find projects from DB
-    const userDoc = await UserModel.deleteOne({ id: req.params.userId });
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const userDoc = await UserModel.deleteOne({ _id: req.params.userId });
 
     if (!userDoc) return next(createError(404, "user not found"));
 
