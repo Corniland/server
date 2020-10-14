@@ -11,7 +11,7 @@ adminProjectsRouter.get("/", async (req, res, next) => {
 
     return res.json(projectDocs);
   } catch (err) {
-    return next(createError(500));
+    return next(createError(500, err));
   }
 });
 
@@ -24,11 +24,10 @@ adminProjectsRouter.get("/:projectId", async (req, res, next) => {
 
     return res.json(projectDoc);
   } catch (err) {
-    return next(createError(500));
+    return next(createError(500, err));
   }
 });
 
-//TODO: Admin Authenticate
 adminProjectsRouter.delete("/:projectId", async (req, res, next) => {
   try {
     //Find projects from DB
@@ -39,7 +38,7 @@ adminProjectsRouter.delete("/:projectId", async (req, res, next) => {
 
     return res.sendStatus(200);
   } catch (err) {
-    return next(createError(500));
+    return next(createError(500, err));
   }
 });
 
