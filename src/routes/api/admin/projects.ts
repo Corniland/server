@@ -3,7 +3,7 @@ import { ProjectModel } from "../../../models/project";
 import createError from "http-errors";
 const adminProjectsRouter = express.Router();
 
-adminProjectsRouter.get("/", async (req, res, next) => {
+adminProjectsRouter.get("/", async (_req, res, next) => {
   try {
     //Find projects from DB
     const projectDocs = await ProjectModel.find();
@@ -14,10 +14,10 @@ adminProjectsRouter.get("/", async (req, res, next) => {
   }
 });
 
-adminProjectsRouter.get("/:projectId", async (req, res, next) => {
+adminProjectsRouter.get("/:id", async (req, res, next) => {
   try {
     //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.userId);
+    const projectDoc = await ProjectModel.findById(req.params.id);
 
     if (!projectDoc) return next(createError(404, "project not found"));
 
@@ -27,10 +27,10 @@ adminProjectsRouter.get("/:projectId", async (req, res, next) => {
   }
 });
 
-adminProjectsRouter.delete("/:projectId", async (req, res, next) => {
+adminProjectsRouter.delete("/:id", async (req, res, next) => {
   try {
     //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
+    const projectDoc = await ProjectModel.findById(req.params.id);
 
     if (!projectDoc) return next(createError(404, "project not found"));
     await projectDoc.deleteOne();
