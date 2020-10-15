@@ -44,3 +44,13 @@ export class Admin extends BaseModel {
 }
 
 export const AdminModel = getModelForClass(Admin);
+
+async function GenerateFirstAdmin(): Promise<void> {
+  if ((await AdminModel.collection.countDocuments()) === 0) {
+    const admin = new AdminModel();
+    admin.login = process.env.DEFAULT_ADMIN_LOGIN;
+    admin.password = process.env.DEFAULT_ADMIN_PASSWORD;
+    admin.save();
+  }
+}
+GenerateFirstAdmin();
