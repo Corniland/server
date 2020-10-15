@@ -3,6 +3,7 @@ import { ProjectModel } from "../../models/project";
 import createError from "http-errors";
 import { needUserAuth, populateUser } from "../../middleware/auth/user";
 import { UserModel } from "../../models/user";
+import { Types } from "mongoose";
 
 const projectRouter = express.Router();
 
