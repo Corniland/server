@@ -10,7 +10,7 @@ import projects from "./projects";
 const router = express.Router();
 
 // API for Admin Panel
-router.use("/admin", /*needAdminAuth, */ apiAdminRouter);
+router.use("/admin", needAdminAuth, apiAdminRouter);
 
 // Normal API for normal Users
 router.use(blockBannedUsers);
