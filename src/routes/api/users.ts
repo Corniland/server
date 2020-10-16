@@ -25,8 +25,8 @@ userRouter.get("/:userId", populateUser, async (req, res, next) => {
   }
 });
 
-userRouter.put("/:userId", needUserAuth, async (req, res, next) => {
-  const userId = req.params.userId;
+userRouter.put("/me", needUserAuth, async (req, res: express.Response, next) => {
+  const userId = res.locals.user?.id;
   const newUserSettings = req.body; //Retreive new settings
   //Find the user in db
   const userDoc = await UserModel.findById(userId);
@@ -50,7 +50,7 @@ userRouter.put("/:userId", needUserAuth, async (req, res, next) => {
       private_profile: newUserSettings.private_profile ? newUserSettings.private_profile : userDoc.private_profile,
     };
 
-    //TODO: Store in db and save
+    // Store in db and save
     userDoc.username = newUserSettings.username;
     userDoc.password = newUserData.password;
     userDoc.password_salt = newUserData.password_salt;
@@ -58,7 +58,7 @@ userRouter.put("/:userId", needUserAuth, async (req, res, next) => {
 
     await userDoc.save();
 
-    res.status(200).json({ email: userDoc.email, username: userDoc.username });
+    res.json({ email: userDoc.email, username: userDoc.username });
   } catch (err) {
     return next(createError(500));
   }
