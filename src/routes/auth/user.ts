@@ -91,11 +91,11 @@ userAuthRouter.get("/me", needUserAuth, async (req, res, next) => {
 
     // return data
     res.status(200).json({
+      id: userDoc?.id,
       email: userDoc?.email,
       username: userDoc?.username,
       private_profile: userDoc?.private_profile,
       liked_projects: userDoc?.liked_projects,
-      banned: userDoc?.banned,
     });
   } catch (err) {
     return next(createError(500));
