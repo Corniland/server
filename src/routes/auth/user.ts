@@ -53,7 +53,7 @@ userAuthRouter.post("/register", async (req, res, next) => {
     // Return auth token;
     const accessToken = jwt.sign(newUserModel.getJWTPayload(), process.env.JWT_SECRET_USER);
 
-    res.status(200).json({ jwt: `Bearer ${accessToken}` });
+    res.status(200).json({ jwt: accessToken });
   } catch (err) {
     return next(createError(500));
   }
@@ -78,7 +78,7 @@ userAuthRouter.post("/login", async (req, res, next) => {
     // Return auth token;
     const accessToken = jwt.sign(userEmailDoc.getJWTPayload(), process.env.JWT_SECRET_USER);
 
-    res.status(200).json({ jwt: `Bearer ${accessToken}` });
+    res.status(200).json({ jwt: accessToken });
   } catch (err) {
     return next(createError(500));
   }
