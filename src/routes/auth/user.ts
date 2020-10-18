@@ -85,7 +85,7 @@ userAuthRouter.post("/login", async (req, res, next) => {
 });
 
 //user whomai route
-userAuthRouter.post("/me", needUserAuth, async (req, res, next) => {
+userAuthRouter.get("/me", needUserAuth, async (req, res, next) => {
   try {
     const userDoc = await UserModel.findOne({ username: res.locals.user.username }); // look for the user in db
 
