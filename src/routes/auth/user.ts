@@ -1,9 +1,11 @@
 import express from "express";
-import { validateUserSignupData, validateUserLoginData } from "../../util/validators";
-import { UserModel } from "../../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
+import rateLimit from "express-rate-limit";
+
+import { validateUserSignupData, validateUserLoginData } from "../../util/validators";
+import { UserModel } from "../../models/user";
 import { needUserAuth } from "../../middleware/auth/user";
 
 export const userAuthRouter = express.Router();
@@ -19,8 +21,13 @@ export interface UserLoginData {
   password: string;
 }
 
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 5,
+});
+
 //user register route
-userAuthRouter.post("/register", async (req, res, next) => {
+userAuthRouter.post("/register", limiter, async (req, res, next) => {
   const newUser: UserRegisterData = { email: req.body.email, username: req.body.username, password: req.body.password };
 
   const { valid, errors } = validateUserSignupData(newUser);
@@ -60,7 +67,7 @@ userAuthRouter.post("/register", async (req, res, next) => {
 });
 
 //user login route
-userAuthRouter.post("/login", async (req, res, next) => {
+userAuthRouter.post("/login", limiter, async (req, res, next) => {
   const userLoginData: UserLoginData = { email: req.body.email, password: req.body.password };
 
   const { valid, errors } = validateUserLoginData(userLoginData);

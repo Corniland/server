@@ -1,9 +1,11 @@
 import express from "express";
-import { ProjectModel } from "../../models/project";
 import createError from "http-errors";
+import { Types } from "mongoose";
+import rateLimit from "express-rate-limit";
+
+import { ProjectModel } from "../../models/project";
 import { needUserAuth, populateUser } from "../../middleware/auth/user";
 import { UserModel } from "../../models/user";
-import { Types } from "mongoose";
 
 const projectRouter = express.Router();
 
@@ -35,31 +37,39 @@ projectRouter.get("/:projectId", populateUser, async (req, res: express.Response
   }
 });
 
-projectRouter.post("/", needUserAuth, async (req, res: express.Response, next) => {
-  try {
-    const projectTitle = req.body.title;
+projectRouter.post(
+  "/",
+  rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 5,
+  }),
+  needUserAuth,
+  async (req, res: express.Response, next) => {
+    try {
+      const projectTitle = req.body.title;
 
-    if (!projectTitle) return next(createError(400, "project title must not be empty"));
+      if (!projectTitle) return next(createError(400, "project title must not be empty"));
 
-    const projectDoc = new ProjectModel({
-      title: projectTitle,
-      short_description: " ",
-      description: " ",
-      status: " ",
-      cover_picture_url: " ",
-      published: false,
-      owner: res.locals.user?._id,
-      members: [],
-      likes: 0,
-    });
+      const projectDoc = new ProjectModel({
+        title: projectTitle,
+        short_description: " ",
+        description: " ",
+        status: " ",
+        cover_picture_url: " ",
+        published: false,
+        owner: res.locals.user?._id,
+        members: [],
+        likes: 0,
+      });
 
-    await projectDoc.save();
+      await projectDoc.save();
 
-    res.json(projectDoc);
-  } catch (err) {
-    return next(createError(500, err));
+      res.json(projectDoc);
+    } catch (err) {
+      return next(createError(500, err));
+    }
   }
-});
+);
 
 projectRouter.put("/:projectId", needUserAuth, async (req, res: express.Response, next) => {
   try {
