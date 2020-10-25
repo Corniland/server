@@ -1,8 +1,10 @@
 import express from "express";
-import { AdminModel } from "../../models/admin";
-import { validateAdminLoginData } from "../../util/validators";
 import jwt from "jsonwebtoken";
 import createError from "http-errors";
+import rateLimit from "express-rate-limit";
+
+import { AdminModel } from "../../models/admin";
+import { validateAdminLoginData } from "../../util/validators";
 import { populateAdmin } from "../../middleware/auth/admin";
 
 export const adminAuthRouter = express.Router();
@@ -12,8 +14,13 @@ export interface AdminLoginData {
   password: string;
 }
 
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 5,
+});
+
 //admin login route
-adminAuthRouter.post("/login", async (req, res, next) => {
+adminAuthRouter.post("/login", limiter, async (req, res, next) => {
   const adminLoginData: AdminLoginData = { login: req.body.login, password: req.body.password };
 
   const { valid, errors } = validateAdminLoginData(adminLoginData);
