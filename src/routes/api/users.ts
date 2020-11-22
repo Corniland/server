@@ -26,39 +26,22 @@ userRouter.get("/:userId", populateUser, async (req, res, next) => {
 });
 
 userRouter.put("/me", needUserAuth, async (req, res: express.Response, next) => {
-  const userId = res.locals.user?.id;
-  const newUserSettings = req.body; //Retreive new settings
-  //Find the user in db
-  const userDoc = await UserModel.findById(userId);
-  if (!userDoc) return next(createError(404));
-  // Update user settings
-
-  if (newUserSettings.username) {
-    const userNewUsernameDoc = await UserModel.findOne({ username: newUserSettings.username });
-    if (userNewUsernameDoc) return next(createError(400, "The username is already taken"));
-  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  res.locals.user = res.locals.user!;
 
   try {
-    let newPassword;
+    if (req.body.username) {
+      if (await UserModel.exists({ username: req.body.username })) return next(createError(400, "The username is already taken"));
+      res.locals.user.username = req.body.username;
+    }
 
-    if (newUserSettings.password) newPassword = await bcrypt.hash(newUserSettings.password, userDoc.password_salt);
+    if (req.body.password) res.locals.user.password = await bcrypt.hash(req.body.password, res.locals.user.password_salt);
 
-    const newUserData = {
-      username: newUserSettings.username,
-      password: newPassword ? newPassword : userDoc.password,
-      password_salt: userDoc.password_salt,
-      private_profile: newUserSettings.private_profile ? newUserSettings.private_profile : userDoc.private_profile,
-    };
+    if (req.body.private_profile) res.locals.user.private_profile = req.body.private_profile;
 
-    // Store in db and save
-    userDoc.username = newUserSettings.username;
-    userDoc.password = newUserData.password;
-    userDoc.password_salt = newUserData.password_salt;
-    userDoc.private_profile = newUserData.private_profile;
+    await res.locals.user.save();
 
-    await userDoc.save();
-
-    res.json({ email: userDoc.email, username: userDoc.username });
+    res.json({ email: res.locals.user.email, username: res.locals.user.username });
   } catch (err) {
     return next(createError(500));
   }
