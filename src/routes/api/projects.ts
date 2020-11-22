@@ -1,18 +1,23 @@
 import express from "express";
 import createError from "http-errors";
-import { Types } from "mongoose";
+import { MongooseFilterQuery, Types } from "mongoose";
 import rateLimit from "express-rate-limit";
 
-import { ProjectModel } from "../../models/project";
+import { Project, ProjectModel } from "../../models/project";
 import { needUserAuth, populateUser } from "../../middleware/auth/user";
 import { UserModel } from "../../models/user";
+import { DocumentType } from "@typegoose/typegoose";
 
 const projectRouter = express.Router();
 
-projectRouter.get("/", async (req, res, next) => {
+projectRouter.get("/", populateUser, async (_req, res: express.Response, next) => {
   try {
-    //Find projects from DB
-    const projectDocs = await ProjectModel.find({ published: true });
+    let query: MongooseFilterQuery<DocumentType<Project>> = {};
+
+    if (res.locals.user) query = { $or: [{ published: true }, { owner: res.locals.user._id }, { members: res.locals.user._id }] };
+    else query = { published: true };
+
+    const projectDocs = await ProjectModel.find(query);
 
     return res.json(projectDocs);
   } catch (err) {
