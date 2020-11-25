@@ -2,11 +2,12 @@ import express from "express";
 import createError from "http-errors";
 import { MongooseFilterQuery, Types } from "mongoose";
 import rateLimit from "express-rate-limit";
+import _ from "lodash";
 
 import { Project, ProjectModel } from "../../models/project";
 import { needUserAuth, populateUser } from "../../middleware/auth/user";
 import { UserModel } from "../../models/user";
-import { DocumentType } from "@typegoose/typegoose";
+import { DocumentType, isRefType } from "@typegoose/typegoose";
 
 const projectRouter = express.Router();
 
@@ -160,52 +161,47 @@ projectRouter.delete("/:projectId/member/:userId", needUserAuth, async (req, res
   }
 });
 
-projectRouter.post("/:projectId/like", needUserAuth, async (req, res, next) => {
+projectRouter.post("/:id/like", needUserAuth, async (req, res: express.Response, next) => {
   try {
-    //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
-    const userDoc = await UserModel.findById(res.locals.user.id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    res.locals.user = res.locals.user!;
 
-    if (!projectDoc) return next(createError(404, "project not found"));
+    const project = await ProjectModel.findById(req.params.id);
+    if (!project) return next(createError(404, "project not found"));
 
-    if (userDoc?.liked_projects.includes(projectDoc.id)) return next(createError(400, "project already liked"));
+    if (res.locals.user.liked_projects.includes(project._id)) return next(createError(400, "project already liked"));
 
-    //Check if the project is public or not
-    const members = projectDoc.members;
-    members?.push(projectDoc.owner);
-    if (!projectDoc.published && !members?.includes(userDoc?.id)) return next(createError(403));
+    if (!project.published && !project.isPartOfProject(res.locals.user)) return next(createError(403));
 
-    userDoc?.liked_projects.push(projectDoc.id); //add project to the list of user's liked projects
-    projectDoc.likes = <number>projectDoc.likes + 1; //increase like count on the project
+    res.locals.user.liked_projects.push(project);
+    project.likes++;
 
-    await userDoc?.save();
-    await projectDoc.save();
-    res.json(projectDoc);
+    await res.locals.user.save();
+    await project.save();
+    res.json(project);
   } catch (err) {
     return next(createError(500, err));
   }
 });
 
-projectRouter.delete("/:projectId/like", needUserAuth, async (req, res, next) => {
+projectRouter.delete("/:id/like", needUserAuth, async (req, res: express.Response, next) => {
   try {
-    //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
-    const userDoc = await UserModel.findById(res.locals.user.id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    res.locals.user = res.locals.user!;
 
-    if (!projectDoc) return next(createError(404, "project not found"));
-    if (!userDoc?.liked_projects.includes(projectDoc.id)) return next(createError(400, "project already unliked"));
+    const project = await ProjectModel.findById(req.params.id);
+    if (!project) return next(createError(404, "project not found"));
 
-    //Check if the project is public or not
-    const members = projectDoc.members;
-    members?.push(projectDoc.owner);
-    if (!projectDoc.published && !members?.includes(userDoc?.id)) return next(createError(403));
+    if (!res.locals.user.liked_projects.includes(project._id)) return next(createError(400, "project not liked"));
 
-    userDoc.liked_projects = userDoc.liked_projects.filter((projectId) => !projectDoc._id.equals(<Types.ObjectId>projectId)); //removed project to the list of user's liked projects
-    projectDoc.likes = <number>projectDoc.likes - 1; //decrease like count on the project
+    if (!project.published && !project.isPartOfProject(res.locals.user)) return next(createError(403));
 
-    await userDoc?.save();
-    await projectDoc.save();
-    res.json(projectDoc);
+    _.remove(res.locals.user.liked_projects, project._id);
+    project.likes--;
+
+    await res.locals.user.save();
+    await project.save();
+    res.json(project);
   } catch (err) {
     return next(createError(500, err));
   }

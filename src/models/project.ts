@@ -1,4 +1,4 @@
-import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
+import { prop, getModelForClass, Ref, isRefType, isRefTypeArray } from "@typegoose/typegoose";
 
 import BaseModel from "./base";
 import { User } from "./user";
@@ -22,6 +22,10 @@ export class Project extends BaseModel {
   public members!: Ref<User>[];
   @prop()
   public likes!: number;
+
+  isPartOfProject(user: User): boolean {
+    return (isRefType(this.owner) && this.owner.equals(user._id)) || (isRefTypeArray(this.members) && this.members.includes(user._id));
+  }
 }
 
 export const ProjectModel = getModelForClass(Project);
