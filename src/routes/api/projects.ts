@@ -1,6 +1,6 @@
 import express from "express";
 import createError from "http-errors";
-import { MongooseFilterQuery, Types } from "mongoose";
+import { MongooseFilterQuery } from "mongoose";
 import rateLimit from "express-rate-limit";
 
 import { Project, ProjectModel } from "../../models/project";
@@ -48,12 +48,10 @@ projectRouter.post(
   needUserAuth,
   async (req, res: express.Response, next) => {
     try {
-      const projectTitle = req.body.title;
+      if (!req.body.title) return next(createError(400, "project title must not be empty"));
 
-      if (!projectTitle) return next(createError(400, "project title must not be empty"));
-
-      const projectDoc = new ProjectModel({
-        title: projectTitle,
+      const project = new ProjectModel({
+        title: req.body.title,
         short_description: " ",
         description: " ",
         status: " ",
@@ -64,36 +62,37 @@ projectRouter.post(
         likes: 0,
       });
 
-      await projectDoc.save();
+      await project.save();
 
-      res.json(projectDoc);
+      res.json(project);
     } catch (err) {
       return next(createError(500, err));
     }
   }
 );
 
-projectRouter.put("/:projectId", needUserAuth, async (req, res: express.Response, next) => {
+projectRouter.put("/:project", needUserAuth, async (req, res: express.Response, next) => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    res.locals.user = res.locals.user!;
+
     //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
+    const project = await ProjectModel.findById(req.params.projectId);
+    if (!project) return next(createError(404, "project  not found"));
 
-    const updatedProject = req.body;
-
-    if (!projectDoc) return next(createError(404, "project  not found"));
-    if (!res.locals.user?._id.equals(<Types.ObjectId>projectDoc.owner)) return next(createError(403));
+    if (!project.isOwner(res.locals.user)) return next(createError(403));
 
     // Store in db and save
-    if (updatedProject.title) projectDoc.title = updatedProject.title;
-    if (updatedProject.short_description) projectDoc.short_description = updatedProject.short_description;
-    if (updatedProject.description) projectDoc.description = updatedProject.description;
-    if (updatedProject.status) projectDoc.status = updatedProject.status;
-    if (updatedProject.cover_picture_url) projectDoc.cover_picture_url = updatedProject.cover_picture_url;
-    if (updatedProject.published) projectDoc.published = updatedProject.published;
+    if (req.body.title) project.title = req.body.title;
+    if (req.body.short_description) project.short_description = req.body.short_description;
+    if (req.body.description) project.description = req.body.description;
+    if (req.body.status) project.status = req.body.status;
+    if (req.body.cover_picture_url) project.cover_picture_url = req.body.cover_picture_url;
+    if (req.body.published) project.published = req.body.published;
 
-    await projectDoc.save();
+    await project.save();
 
-    res.json(projectDoc);
+    res.json(project);
   } catch (err) {
     return next(createError(500, err));
   }
@@ -173,7 +172,7 @@ projectRouter.post("/:id/like", needUserAuth, async (req, res: express.Response,
 
     if (res.locals.user.liked_projects.includes(project._id)) return next(createError(400, "project already liked"));
 
-    if (!project.published && !project.isPartOfProject(res.locals.user)) return next(createError(403));
+    if (!project.canSeeProject(res.locals.user)) return next(createError(403));
 
     res.locals.user.likeProject(project);
 
@@ -195,7 +194,7 @@ projectRouter.delete("/:id/like", needUserAuth, async (req, res: express.Respons
 
     if (!res.locals.user.liked_projects.includes(project._id)) return next(createError(400, "project not liked"));
 
-    if (!project.published && !project.isPartOfProject(res.locals.user)) return next(createError(403));
+    if (!project.canSeeProject(res.locals.user)) return next(createError(403));
 
     res.locals.user.unlikeProject(project);
 
