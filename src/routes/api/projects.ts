@@ -25,16 +25,13 @@ projectRouter.get("/", populateUser, async (_req, res: express.Response, next) =
   }
 });
 
-projectRouter.get("/:projectId", populateUser, async (req, res: express.Response, next) => {
+projectRouter.get("/:id", populateUser, async (req, res: express.Response, next) => {
   try {
     //Find projects from DB
-    const project = await ProjectModel.findById(req.params.projectId);
-
+    const project = await ProjectModel.findById(req.params.id);
     if (!project) return next(createError(404));
 
-    const members = project.members;
-    members?.push(project.owner);
-    if (!project.published && !members?.includes(res.locals.user?._id)) return next(createError(403));
+    if (!project.canSeeProject(res.locals.user)) return next(createError(403));
 
     return res.json(project);
   } catch (err) {
