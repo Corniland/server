@@ -2,12 +2,11 @@ import express from "express";
 import createError from "http-errors";
 import { MongooseFilterQuery, Types } from "mongoose";
 import rateLimit from "express-rate-limit";
-import _ from "lodash";
 
 import { Project, ProjectModel } from "../../models/project";
 import { needUserAuth, populateUser } from "../../middleware/auth/user";
 import { UserModel } from "../../models/user";
-import { DocumentType, isRefType } from "@typegoose/typegoose";
+import { DocumentType } from "@typegoose/typegoose";
 
 const projectRouter = express.Router();
 
@@ -103,16 +102,17 @@ projectRouter.put("/:projectId", needUserAuth, async (req, res: express.Response
   }
 });
 
-projectRouter.delete("/:projectId", needUserAuth, async (req, res: express.Response, next) => {
+projectRouter.delete("/:id", needUserAuth, async (req, res: express.Response, next) => {
   try {
-    //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    res.locals.user = res.locals.user!;
 
-    if (!projectDoc) return next(createError(404, "project not found"));
+    const project = await ProjectModel.findById(req.params.id);
+    if (!project) return next(createError(404, "project not found"));
 
-    if (projectDoc?.owner !== res.locals.user?._id) return next(createError(403));
+    if (!project.isOwner(res.locals.user)) return next(createError(403));
 
-    await projectDoc.deleteOne();
+    await project.deleteOne();
 
     return res.sendStatus(200);
   } catch (err) {
@@ -120,42 +120,47 @@ projectRouter.delete("/:projectId", needUserAuth, async (req, res: express.Respo
   }
 });
 
-projectRouter.post("/:projectId/member/:userId", needUserAuth, async (req, res: express.Response, next) => {
+projectRouter.post("/:id/member/:userId", needUserAuth, async (req, res: express.Response, next) => {
   try {
-    //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
-    const userDoc = await UserModel.findById(req.params.userId);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    res.locals.user = res.locals.user!;
 
-    if (!projectDoc) return next(createError(404, "project  not found"));
-    if (!userDoc) return next(createError(404, "user  not found"));
-    if (!res.locals.user?._id.equals(<Types.ObjectId>projectDoc.owner)) return next(createError(403));
-    if (projectDoc.members.includes(userDoc._id)) return next(createError(400, "User is already a member"));
+    const project = await ProjectModel.findById(req.params.id);
+    if (!project) return next(createError(404, "project  not found"));
 
-    projectDoc.members?.push(userDoc.id);
+    const userToAdd = await UserModel.findById(req.params.userId);
 
-    await projectDoc.save();
+    if (!userToAdd) return next(createError(404, "user  not found"));
+    if (!project.isOwner(res.locals.user)) return next(createError(403));
+    if (project.isMember(userToAdd)) return next(createError(400, "User is already a member"));
 
-    res.json(projectDoc);
+    project.addMember(userToAdd);
+    await project.save();
+
+    res.json(project);
   } catch (err) {
     return next(createError(500, err));
   }
 });
 
-projectRouter.delete("/:projectId/member/:userId", needUserAuth, async (req, res: express.Response, next) => {
+projectRouter.delete("/:id/member/:userId", needUserAuth, async (req, res: express.Response, next) => {
   try {
-    //Find projects from DB
-    const projectDoc = await ProjectModel.findById(req.params.projectId);
-    const userDoc = await UserModel.findById(req.params.userId);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    res.locals.user = res.locals.user!;
 
-    if (!projectDoc) return next(createError(404, "project  not found"));
-    if (!userDoc) return next(createError(404, "user  not found"));
-    if (!res.locals.user?._id.equals(<Types.ObjectId>projectDoc.owner)) return next(createError(403));
-    if (!projectDoc.members.includes(userDoc.id)) return next(createError(400, "User is not a member"));
+    const project = await ProjectModel.findById(req.params.id);
+    if (!project) return next(createError(404, "project  not found"));
 
-    projectDoc.members = projectDoc.members?.filter((userId) => !userDoc._id.equals(<Types.ObjectId>userId)); //removed project to the list of user's liked projects
-    await projectDoc.save();
+    const userToRemove = await UserModel.findById(req.params.userId);
 
-    res.json(projectDoc);
+    if (!userToRemove) return next(createError(404, "user  not found"));
+    if (!project.isOwner(res.locals.user)) return next(createError(403));
+    if (!project.isMember(userToRemove)) return next(createError(400, "User is not a member"));
+
+    project.removeMember(userToRemove);
+    await project.save();
+
+    res.json(project);
   } catch (err) {
     return next(createError(500, err));
   }
@@ -173,8 +178,7 @@ projectRouter.post("/:id/like", needUserAuth, async (req, res: express.Response,
 
     if (!project.published && !project.isPartOfProject(res.locals.user)) return next(createError(403));
 
-    res.locals.user.liked_projects.push(project);
-    project.likes++;
+    res.locals.user.likeProject(project);
 
     await res.locals.user.save();
     await project.save();
@@ -196,8 +200,7 @@ projectRouter.delete("/:id/like", needUserAuth, async (req, res: express.Respons
 
     if (!project.published && !project.isPartOfProject(res.locals.user)) return next(createError(403));
 
-    _.remove(res.locals.user.liked_projects, project._id);
-    project.likes--;
+    res.locals.user.unlikeProject(project);
 
     await res.locals.user.save();
     await project.save();

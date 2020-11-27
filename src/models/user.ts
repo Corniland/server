@@ -1,4 +1,5 @@
-import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
+import { prop, getModelForClass, Ref, isRefType } from "@typegoose/typegoose";
+import _ from "lodash";
 
 import { hashPassword } from "../util/authUtil";
 
@@ -38,6 +39,16 @@ export class User extends BaseModel {
       email: this.email,
       username: this.username,
     };
+  }
+
+  likeProject(project: Project): void {
+    this.liked_projects.push(project);
+    project.likes++;
+  }
+
+  unlikeProject(project: Project): void {
+    _.remove(this.liked_projects, (p) => isRefType(p) && p.equals(project._id));
+    project.likes--;
   }
 }
 

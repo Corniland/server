@@ -1,4 +1,5 @@
 import { prop, getModelForClass, Ref, isRefType, isRefTypeArray } from "@typegoose/typegoose";
+import _ from "lodash";
 
 import BaseModel from "./base";
 import { User } from "./user";
@@ -23,8 +24,24 @@ export class Project extends BaseModel {
   @prop()
   public likes!: number;
 
+  isOwner(user: User): boolean {
+    return isRefType(this.owner) && this.owner.equals(user._id);
+  }
+
+  isMember(user: User): boolean {
+    return isRefTypeArray(this.members) && this.members.includes(user._id);
+  }
+
   isPartOfProject(user: User): boolean {
-    return (isRefType(this.owner) && this.owner.equals(user._id)) || (isRefTypeArray(this.members) && this.members.includes(user._id));
+    return this.isOwner(user) || this.isMember(user);
+  }
+
+  addMember(user: User): void {
+    this.members.push(user);
+  }
+
+  removeMember(user: User): void {
+    _.remove(this.members, (m) => isRefType(m) && m.equals(user._id));
   }
 }
 
