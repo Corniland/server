@@ -41,7 +41,7 @@ export class Project extends BaseModel {
   }
 
   removeMember(user: User): void {
-    _.remove(this.members, (m) => isRefType(m) && m.equals(user._id));
+    this.members = _.remove(this.members, (m) => isRefType(m) && m.equals(user._id));
   }
 
   canSeeProject(user: User | undefined): boolean {

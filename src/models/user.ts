@@ -47,7 +47,7 @@ export class User extends BaseModel {
   }
 
   unlikeProject(project: Project): void {
-    _.remove(this.liked_projects, (p) => isRefType(p) && p.equals(project._id));
+    this.liked_projects = _.remove(this.liked_projects, (p) => isRefType(p) && p.equals(project._id));
     project.likes--;
   }
 }
