@@ -1,5 +1,5 @@
-import { prop, getModelForClass, Ref, isRefType } from "@typegoose/typegoose";
-import _ from "lodash";
+import mongoose from "mongoose";
+import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
 
 import { hashPassword } from "../util/authUtil";
 
@@ -22,7 +22,7 @@ export class User extends BaseModel {
   @prop({ required: true })
   public password_salt!: string;
   @prop({ ref: Project })
-  public liked_projects!: Ref<Project>[];
+  public liked_projects!: mongoose.Types.Array<Ref<Project>>;
   @prop({ required: true, default: true })
   public private_profile!: boolean;
   @prop({ required: true, default: false })
@@ -47,7 +47,7 @@ export class User extends BaseModel {
   }
 
   unlikeProject(project: Project): void {
-    this.liked_projects = _.remove(this.liked_projects, (p) => isRefType(p) && p.equals(project._id));
+    this.liked_projects.pull(project);
     project.likes--;
   }
 }

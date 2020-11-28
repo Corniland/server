@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { prop, getModelForClass, Ref, isRefType, isRefTypeArray } from "@typegoose/typegoose";
 import _ from "lodash";
 
@@ -20,7 +21,7 @@ export class Project extends BaseModel {
   @prop({ ref: "User" })
   public owner!: Ref<User>;
   @prop({ ref: "User" })
-  public members!: Ref<User>[];
+  public members!: mongoose.Types.Array<Ref<User>[]>;
   @prop()
   public likes!: number;
 
@@ -41,7 +42,7 @@ export class Project extends BaseModel {
   }
 
   removeMember(user: User): void {
-    this.members = _.remove(this.members, (m) => isRefType(m) && m.equals(user._id));
+    this.members.pull(user);
   }
 
   canSeeProject(user: User | undefined): boolean {
