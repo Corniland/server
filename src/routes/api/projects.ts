@@ -71,13 +71,13 @@ projectRouter.post(
   }
 );
 
-projectRouter.put("/:project", needUserAuth, async (req, res: express.Response, next) => {
+projectRouter.put("/:id", needUserAuth, async (req, res: express.Response, next) => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     res.locals.user = res.locals.user!;
 
     //Find projects from DB
-    const project = await ProjectModel.findById(req.params.projectId);
+    const project = await ProjectModel.findById(req.params.id);
     if (!project) return next(createError(404, "project  not found"));
 
     if (!project.isOwner(res.locals.user)) return next(createError(403));
