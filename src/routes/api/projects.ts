@@ -206,19 +206,4 @@ projectRouter.delete("/:id/like", needUserAuth, async (req, res: express.Respons
   }
 });
 
-async function toto(): Promise<void> {
-  const user = await UserModel.findOne();
-  const project = await ProjectModel.findById("5fba45d75fc1fe78af6abcf3");
-  if (!user) return;
-  if (!project) return;
-
-  console.log(user.liked_projects);
-  user.likeProject(project);
-  console.log(user.liked_projects);
-  user.unlikeProject(project);
-  console.log(user.liked_projects);
-}
-
-toto();
-
 export default projectRouter;
